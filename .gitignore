@@ -1,0 +1,10 @@
+# 최상위 .gitignore 파일 내용에 다음을 추가합니다:
+
+# Dependencies
+/node_modules
+/client/node_modules
+/server/node_modules
+
+# Project Environment
+.env
+.venv
