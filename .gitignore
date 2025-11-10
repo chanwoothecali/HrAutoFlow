@@ -8,3 +8,4 @@
 /server/.idea
 /server/.venv
 /server/.env
+/client/.next/
