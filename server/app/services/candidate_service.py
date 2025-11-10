@@ -6,6 +6,8 @@ from langchain_openai import OpenAIEmbeddings
 import os
 from dotenv import load_dotenv
 
+from llm_models.upstage_llm import solar_invoke, doc_invoke
+
 load_dotenv()
 embeddings_model = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
 STORAGE_DIR = Path("storage")
@@ -14,14 +16,11 @@ STORAGE_DIR.mkdir(exist_ok=True)
 def extract_text(file):
     content = file.file.read()
     if file.filename.endswith(".pdf"):
-        images = convert_from_bytes(content)
-        text_data = ""
-        for img in images:
-            text_data += pytesseract.image_to_string(img)
-        return text_data
+        img_to_text = doc_invoke(content)
+        return img_to_text
     else:
-        img = Image.open(file.file)
-        return pytesseract.image_to_string(img)
+        img_to_text = doc_invoke(content)
+        return img_to_text
 
 def save_candidate(db: Session, name: str, email: str, file):
     file_path = STORAGE_DIR / file.filename

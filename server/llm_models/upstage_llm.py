@@ -9,7 +9,14 @@ load_dotenv()
 # 환경 변수에서 API 키 로드
 UPSTAGE_API_KEY = os.getenv("UPSTAGE_API_KEY")
 API_URL = "https://api.upstage.ai/v1/chat/completions"
+DOCUMENT_URL = "https://api.upstage.ai/v1/document-digitization"
 
+def doc_invoke(filename):
+    headers = {"Authorization": f"Bearer {UPSTAGE_API_KEY}"}
+    files = {"document": open(filename, "rb")}
+    data = {"ocr": "force", "base64_encoding": "['table']", "model": "document-parse"}
+    response = requests.post(DOCUMENT_URL, headers=headers, files=files, data=data)
+    return response.json()
 
 # --- LangChain 'invoke' 스타일과 유사하게 수정된 함수 ---
 

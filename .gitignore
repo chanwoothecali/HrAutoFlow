@@ -9,3 +9,5 @@
 /server/.venv
 /server/.env
 /client/.next/
+/server/.idea/
+
