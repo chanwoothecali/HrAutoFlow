@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 46, "column": 0}, "map": {"version":3,"sources":["file:///Users/gyunolee/PycharmProjects/HrAutoFlow/client/src/app/api/ask/route.ts"],"sourcesContent":["import { NextResponse } from \"next/server\";\n\nexport async function POST(req: Request) {\n  try {\n    const { prompt } = await req.json();\n\n    const res = await fetch(\"http://localhost:8000/llm/ask\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ prompt }),\n    });\n\n    if (!res.ok) {\n      return NextResponse.json({ error: \"FastAPI 호출 실패\" }, { status: 500 });\n    }\n\n    const data = await res.json();\n    return NextResponse.json(data);\n  } catch (err) {\n    return NextResponse.json({ error: \"서버 에러\" }, { status: 500 });\n  }\n}"],"names":[],"mappings":";;;;AAAA;;AAEO,eAAe,KAAK,GAAY;IACrC,IAAI;QACF,MAAM,EAAE,MAAM,EAAE,GAAG,MAAM,IAAI,IAAI;QAEjC,MAAM,MAAM,MAAM,MAAM,iCAAiC;YACvD,QAAQ;YACR,SAAS;gBAAE,gBAAgB;YAAmB;YAC9C,MAAM,KAAK,SAAS,CAAC;gBAAE;YAAO;QAChC;QAEA,IAAI,CAAC,IAAI,EAAE,EAAE;YACX,OAAO,gJAAY,CAAC,IAAI,CAAC;gBAAE,OAAO;YAAgB,GAAG;gBAAE,QAAQ;YAAI;QACrE;QAEA,MAAM,OAAO,MAAM,IAAI,IAAI;QAC3B,OAAO,gJAAY,CAAC,IAAI,CAAC;IAC3B,EAAE,OAAO,KAAK;QACZ,OAAO,gJAAY,CAAC,IAAI,CAAC;YAAE,OAAO;QAAQ,GAAG;YAAE,QAAQ;QAAI;IAC7D;AACF","debugId":null}}]
-}
