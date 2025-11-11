@@ -1,22 +1,17 @@
 import { NextResponse } from "next/server";
+import axios from "axios";
 
 export async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
 
-    const res = await fetch("http://localhost:8000/llm/ask", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt }),
-    });
+    const res = await axios.post("http://localhost:8000/llm/ask", { prompt });
 
-    if (!res.ok) {
-      return NextResponse.json({ error: "FastAPI 호출 실패" }, { status: 500 });
-    }
+    // axios는 res.data로 바로 접근 (await 불필요)
+    return NextResponse.json(res.data);
 
-    const data = await res.json();
-    return NextResponse.json(data);
   } catch (err) {
+    console.error("API Error:", err);
     return NextResponse.json({ error: "서버 에러" }, { status: 500 });
   }
 }
