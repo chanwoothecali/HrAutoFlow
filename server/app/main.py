@@ -23,7 +23,7 @@ app.add_middleware(
 )
 
 # 라우터 등록
-app.include_router(llm_router.router, prefix="/llm", tags=["LLM"])
+app.include_router(llm_router.router, prefix="/api/llm", tags=["LLM"])
 
 @app.get("/")
 def read_root():
