@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from starlette.middleware.cors import CORSMiddleware
 from app.db import get_db
 
-from app.routers import llm_router
+from app.routers import llm_router, upload_router
 
 app = FastAPI(title="HrAutoFlow LLM API")
 
@@ -24,6 +24,7 @@ app.add_middleware(
 
 # 라우터 등록
 app.include_router(llm_router.router, prefix="/api/llm", tags=["LLM"])
+app.include_router(upload_router.router, prefix="/api/file", tags=["LLM"])
 
 @app.get("/")
 def read_root():

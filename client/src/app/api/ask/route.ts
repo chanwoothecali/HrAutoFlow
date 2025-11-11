@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
 
-    const res = await axios.post("http://localhost:8000/llm/ask", { prompt });
+    const res = await axios.post("http://localhost:8000/api/llm/ask", { prompt });
 
     // axios는 res.data로 바로 접근 (await 불필요)
     return NextResponse.json(res.data);
