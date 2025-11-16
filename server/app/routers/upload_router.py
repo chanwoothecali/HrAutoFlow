@@ -1,7 +1,6 @@
 import shutil
 import uuid
 from pathlib import Path
-
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from starlette.responses import JSONResponse
 
@@ -29,6 +28,8 @@ async def upload_file(file: UploadFile = File(...)):
         # 파일 저장
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
+
+        # 서버에 파일저장 성공시
 
         # 나중에 DB에 저장할 정보 반환
         return JSONResponse(content={
