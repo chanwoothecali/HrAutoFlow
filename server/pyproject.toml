@@ -17,11 +17,19 @@ dependencies = [
     "python-dotenv (>=1.2.1,<2.0.0)",
     "sqlalchemy (>=2.0.44,<3.0.0)",
     "psycopg2-binary (>=2.9.11,<3.0.0)",
-    "pgvector (>=0.4.1,<0.5.0)",
+    "pgvector (>=0.3.0,<0.4.0)",
     "langchain-core (>=1.0.4,<2.0.0)",
     "notebook (>=7.4.7,<8.0.0)",
     "langchain-ollama (>=1.0.0,<2.0.0)",
-    "python-multipart (>=0.0.20,<0.0.21)"
+    "python-multipart (>=0.0.20,<0.0.21)",
+    "langchain-text-splitters (>=1.0.0,<2.0.0)",
+    "langchain-postgres (>=0.0.16,<0.0.17)",
+    "pillow (>=12.0.0,<13.0.0)",
+    "pytesseract (>=0.3.13,<0.4.0)",
+    "pypdf (>=6.3.0,<7.0.0)",
+    "python-docx (>=1.2.0,<2.0.0)",
+    "pydantic (>=2.12.4,<3.0.0)",
+    "email-validator (>=2.3.0,<3.0.0)"
 ]
 
 

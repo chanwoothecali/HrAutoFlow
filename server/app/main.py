@@ -1,36 +1,46 @@
-from fastapi import FastAPI, Depends
-from sqlalchemy import text
-from sqlalchemy.orm import Session
-from starlette.middleware.cors import CORSMiddleware
-from app.db import get_db
+# app/main.py
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import llm_router, upload_router
+from app.routers import upload_router, candidates_router, llm_router
 
-app = FastAPI(title="HrAutoFlow LLM API")
+app = FastAPI(
+    title="HR AutoFlow API",
+    description="AI 기반 이력서 분석 시스템 (langchain_ollama + Llama3)",
+    version="1.0.0"
+)
 
 # CORS 설정
-origins = [
-    "http://localhost:3000",  # Next.js dev 서버
-    # 필요하면 "*"로 전체 허용 가능, 하지만 개발 환경에서만 권장
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,      # 허용할 도메인
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
-    allow_methods=["*"],        # GET, POST 등 모두 허용
-    allow_headers=["*"],        # 헤더 모두 허용
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # 라우터 등록
-app.include_router(llm_router.router, prefix="/api/llm", tags=["LLM"])
-app.include_router(upload_router.router, prefix="/api/file", tags=["LLM"])
+app.include_router(upload_router.router)
+app.include_router(candidates_router.router)
+app.include_router(llm_router.router)
+
 
 @app.get("/")
-def read_root():
-    return {"message": "Welcome to HrAutoFlow API"}
+async def root():
+    return {
+        "message": "HR AutoFlow API",
+        "version": "1.0.0",
+        "llm": "Ollama Llama3",
+        "framework": "langchain_ollama",
+        "status": "running"
+    }
 
-@app.get("/test-db")
-def test_db(db: Session = Depends(get_db)):
-    result = db.execute(text("SELECT 1")).fetchone()
-    return {"result": result[0]}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
