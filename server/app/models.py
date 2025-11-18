@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, BigInteger, Text, Boolean, Float
 from sqlalchemy.dialects.postgresql import JSONB, ARRAY, UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from datetime import datetime
+from pgvector.sqlalchemy import Vector
 import uuid
 
 from app.db import Base
@@ -109,7 +109,7 @@ class VectorStore(Base):
     doc_name = Column(Text)
     chunk_index = Column(BigInteger)
     content = Column(Text)
-    embedding = Column(Text)  # pgvector Vector type
+    embedding = Column(Vector(768))  # pgvector Vector type
     meta_data = Column(JSONB)  # ⭐ metadata → meta_data 로 변경
     created_at = Column(TIMESTAMP, server_default=func.now())
 

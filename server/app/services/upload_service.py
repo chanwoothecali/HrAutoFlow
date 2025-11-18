@@ -5,17 +5,31 @@ from PIL import Image
 import pytesseract
 import pypdf
 from docx import Document as DocxDocument
+import requests
+import os
+from bs4 import BeautifulSoup
 
-# 추후 test에 있는 upstage로 변경예정
+
 class UploadService:
 
     @staticmethod
-    async def extract_text_from_file(file_path: str) -> str:
-        """파일에서 텍스트 추출"""
+    async def extract_text_from_file(file_path: str, use_upstage: bool = True) -> str:
+        """
+        파일에서 텍스트 추출
+
+        Args:
+            file_path: 파일 경로
+            use_upstage: True면 Upstage API 사용, False면 기본 파서 사용
+        """
         file_path = Path(file_path)
         extension = file_path.suffix.lower()
 
         try:
+            # Upstage API 사용 (모든 파일 형식 지원)
+            if use_upstage:
+                return UploadService._extract_from_files_with_upstage(str(file_path))
+
+            # 기본 파서 사용 (확장자별 분기)
             if extension == '.pdf':
                 return UploadService._extract_from_pdf(file_path)
             elif extension == '.docx':
@@ -74,6 +88,64 @@ class UploadService:
             return text.strip()
         except Exception as e:
             raise Exception(f"OCR 추출 실패: {e}")
+
+    @staticmethod
+    def _extract_from_files_with_upstage(file_path: str) -> str:
+        """
+        Upstage Document Parse API를 사용한 파일 파싱
+        모든 파일 형식 호환 가능 (PDF, DOCX, 이미지 등)
+        """
+        try:
+            # 환경 변수에서 API 키 가져오기
+            from app.config import settings
+            UPSTAGE_API_KEY = settings.UPSTAGE_API_KEY
+
+            if not UPSTAGE_API_KEY:
+                raise ValueError("UPSTAGE_API_KEY가 설정되지 않았습니다.")
+
+            # Upstage Document Digitization API 엔드포인트
+            DOCUMENT_URL = "https://api.upstage.ai/v1/document-digitization"
+
+            # API 요청 헤더 및 데이터 준비
+            headers = {"Authorization": f"Bearer {UPSTAGE_API_KEY}"}
+
+            with open(file_path, "rb") as f:
+                files = {"document": f}
+                data = {"model": "document-parse"}
+
+                # API 요청
+                response = requests.post(
+                    DOCUMENT_URL,
+                    headers=headers,
+                    files=files,
+                    data=data,
+                    timeout=60  # 타임아웃 60초
+                )
+
+            # 응답 확인
+            if response.status_code != 200:
+                raise Exception(f"Upstage API 오류: {response.status_code} - {response.text}")
+
+            result = response.json()
+
+            # HTML 콘텐츠 추출
+            html_content = result.get("content", {}).get("html", "")
+
+            if not html_content:
+                raise Exception("Upstage API에서 콘텐츠를 추출할 수 없습니다.")
+
+            # HTML 태그 제거 후 순수 텍스트 추출
+            soup = BeautifulSoup(html_content, "html.parser")
+            clean_text = soup.get_text(separator="\n").strip()
+
+            return clean_text
+
+        except requests.exceptions.Timeout:
+            raise Exception("Upstage API 요청 시간 초과")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Upstage API 요청 실패: {str(e)}")
+        except Exception as e:
+            raise Exception(f"Upstage 파싱 실패: {str(e)}")
 
     @staticmethod
     def validate_file(filename: str, max_size_mb: int = 10) -> bool:

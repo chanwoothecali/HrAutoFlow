@@ -24,7 +24,7 @@ class LLMService:
 
         # Ollama Embeddings (Llama3)
         self.embeddings = OllamaEmbeddings(
-            model="llama3",
+            model="nomic-embed-text",
             base_url="http://localhost:11434"
         )
 

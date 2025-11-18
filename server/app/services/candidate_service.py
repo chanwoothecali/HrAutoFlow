@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from pathlib import Path
 import asyncio
 
-from app.models import Resume, ResumeAnalysis
+from app.models import Resume, ResumeAnalysis, VectorStore
 from app.services.llm_service import llm_service
 from app.services.upload_service import upload_service
 
@@ -18,16 +18,7 @@ class CandidateService:
             position: str,
             db: Session
     ):
-        """
-        ⭐ 완전한 이력서 처리 파이프라인
-        1. 텍스트 추출
-        2. 텍스트 스플리팅
-        3. 임베딩 (OllamaEmbeddings)
-        4. Vector DB 저장 (PGVector)
-        5. 자동 분석 (요약, 강점, 면접질문, 스킬)
-        6. ResumeAnalysis DB 저장
-        """
-        from app.db import DATABASE_URL
+        """완전한 이력서 처리 파이프라인 (동기 방식)"""
 
         resume = None
 
@@ -36,7 +27,6 @@ class CandidateService:
             print(f"[Pipeline] 시작: resume_id={resume_id}")
             print(f"{'=' * 60}\n")
 
-            # Resume 조회
             resume = db.query(Resume).filter(Resume.id == resume_id).first()
             if not resume:
                 raise Exception(f"Resume not found: {resume_id}")
@@ -55,7 +45,6 @@ class CandidateService:
 
             print(f"[Step 1] ✅ 추출 완료: {len(text)} characters")
 
-            # DB에 extracted_text 저장
             resume.extracted_text = text
             db.commit()
 
@@ -78,24 +67,34 @@ class CandidateService:
             )
 
             print(f"[Step 2] ✅ 분할 완료: {len(documents)} chunks")
-            for i, doc in enumerate(documents[:3]):  # 처음 3개만 출력
+            for i, doc in enumerate(documents[:3]):
                 print(f"  - Chunk {i}: {len(doc.page_content)} chars")
 
             # ============================================
-            # 3. 임베딩 & Vector DB 저장
+            # 3. 임베딩 & Vector DB 저장 (⭐ 동기 방식)
             # ============================================
             print(f"\n[Step 3] 임베딩 & Vector DB 저장 중...")
             resume.processing_status = "embedding"
             db.commit()
 
-            # PGVector 초기화
-            vectorstore = llm_service.get_vectorstore(
-                connection_string=DATABASE_URL,
-                collection_name="resume_vectors"
-            )
+            for i, doc in enumerate(documents):
+                print(f"  - Embedding chunk {i + 1}/{len(documents)}...")
 
-            # ⭐ 문서 추가 (자동으로 OllamaEmbeddings로 임베딩 생성 후 저장)
-            await vectorstore.aadd_documents(documents)
+                # ⭐ 동기 방식으로 임베딩 생성
+                embedding = llm_service.embeddings.embed_query(doc.page_content)
+
+                # DB에 저장
+                vector_data = VectorStore(
+                    doc_id=doc.metadata.get("doc_id"),
+                    doc_name=doc.metadata.get("doc_name"),
+                    chunk_index=doc.metadata.get("chunk_index"),
+                    content=doc.page_content,
+                    embedding=embedding,  # List[float]
+                    meta_data=doc.metadata
+                )
+                db.add(vector_data)
+
+            db.commit()
 
             print(f"[Step 3] ✅ Vector DB 저장 완료: {len(documents)} vectors")
 
@@ -106,7 +105,7 @@ class CandidateService:
             resume.processing_status = "analyzing"
             db.commit()
 
-            # 병렬 실행으로 성능 향상
+            # 병렬 실행
             summary_task = llm_service.generate_summary(text)
             strengths_task = llm_service.analyze_strengths(text)
             questions_task = llm_service.generate_interview_questions(text, position)
@@ -155,7 +154,6 @@ class CandidateService:
             # ============================================
             print(f"\n[Step 5] 분석 결과 DB 저장 중...")
 
-            # 기존 분석 결과 삭제 (있을 경우)
             db.query(ResumeAnalysis).filter(ResumeAnalysis.resume_id == resume_id).delete()
 
             analysis = ResumeAnalysis(
@@ -190,6 +188,8 @@ class CandidateService:
             print(f"\n{'=' * 60}")
             print(f"[Pipeline] ❌ 실패: resume_id={resume_id}")
             print(f"오류: {str(e)}")
+            import traceback
+            traceback.print_exc()
             print(f"{'=' * 60}\n")
 
             if resume:
