@@ -1,11 +1,13 @@
 # app/services/llm_service.py
 from typing import List, Dict, Any, Optional
 from langchain_ollama import OllamaLLM, OllamaEmbeddings
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from langchain_postgres import PGVector
+from app.config import settings
 import json
 import re
 
@@ -14,21 +16,47 @@ class LLMService:
     def __init__(self):
         """langchain_ollama 기반 LLM 서비스 초기화"""
 
-        # Ollama LLM (Llama3)
-        self.llm = OllamaLLM(
-            model="llama3",
-            temperature=0.7,
-            base_url="http://localhost:11434",
-            num_predict=512,  # 최대 토큰 수
-        )
+        if settings.LLM_PROVIDER == "openai":
+            # OpenAI LLM
+            self.llm = ChatOpenAI(
+                model=settings.OPENAI_MODEL,
+                temperature=0.7,
+                api_key=settings.OPENAI_API_KEY,
+                max_tokens=2000,  # 최대 토큰 수
+            )
 
-        # Ollama Embeddings (Llama3)
-        self.embeddings = OllamaEmbeddings(
-            model="nomic-embed-text",
-            base_url="http://localhost:11434"
-        )
+            # # OpenAI Embeddings
+            # self.embeddings = OpenAIEmbeddings(
+            #     model="text-embedding-3-small",  # 또는 "text-embedding-ada-002"
+            #     api_key=settings.OPENAI_API_KEY,
+            # )
 
-        # Text Splitter
+            # Ollama Embeddings
+            self.embeddings = OllamaEmbeddings(
+                model="nomic-embed-text",
+                base_url=settings.OLLAMA_BASE_URL,
+            )
+
+            print("✅ OpenAI LLM 및 Embeddings 초기화 완료")
+
+        else:  # ollama (기본값)
+            # Ollama LLM (Llama3)
+            self.llm = OllamaLLM(
+                model=settings.OLLAMA_MODEL,
+                temperature=0.7,
+                base_url=settings.OLLAMA_BASE_URL,
+                num_predict=512,
+            )
+
+            # Ollama Embeddings
+            self.embeddings = OllamaEmbeddings(
+                model="nomic-embed-text",
+                base_url=settings.OLLAMA_BASE_URL,
+            )
+
+            print("✅ Ollama LLM 및 Embeddings 초기화 완료")
+
+            # Text Splitter (공통)
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
             chunk_overlap=200,

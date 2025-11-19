@@ -20,6 +20,10 @@ class Settings(BaseSettings):
     # API Keys
     UPSTAGE_API_KEY: Optional[str] = None
     OPENAI_API_KEY: Optional[str] = None
+    OPENAI_MODEL: str = "gpt-4o-mini"  # 또는 "gpt-4", "gpt-3.5-turbo"
+
+    # LLM Provider 선택 추가
+    LLM_PROVIDER: str = "ollama"  # "ollama" 또는 "openai"
 
     # LangSmith
     LANGSMITH_TRACING: Optional[str] = None
