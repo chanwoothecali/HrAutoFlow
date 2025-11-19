@@ -4,9 +4,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const navigation = [
-  { name: '대시보드', href: '/dashboard' },
-  { name: '지원자', href: '/candidates' },
-  { name: '채용 공고', href: '/jobs' },
+  { name: 'Dashboard', href: '/dashboard' },
+  { name: 'Candidates', href: '/candidates' },
+  { name: 'Jobs', href: '/jobs' },
 ];
 
 function classNames(...classes: (string | false | null | undefined)[]) {
