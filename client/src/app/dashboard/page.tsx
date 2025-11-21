@@ -13,15 +13,25 @@ async function getDashboardData(): Promise<{
   stats: DashboardStats;
   recommendedCandidates: Candidate[];
 }> {
-  const res = await fetch('http://localhost:3001/dashboard', {
-    cache: 'no-store',
-  });
+  const [statsRes, recommendedRes] = await Promise.all([
+    // 통계
+    fetch('http://localhost:3001/stats/positions', {
+      cache: 'no-store',
+    }),
+    // 추천 지원자 5명
+    fetch('http://localhost:3001/candidates/recommended', {
+      cache: 'no-store',
+    }),
+  ]);
 
-  if (!res.ok) {
+  if (!statsRes.ok || !recommendedRes.ok) {
     throw new Error('대시보드 데이터를 불러오지 못했습니다.');
   }
 
-  return res.json();
+  const stats: DashboardStats = await statsRes.json();
+  const recommendedCandidates: Candidate[] = await recommendedRes.json();
+
+  return { stats, recommendedCandidates };
 }
 
 export default async function DashboardPage() {
@@ -35,13 +45,19 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-8">
-      <section className="grid gap-4 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:h-[calc(100vh-160px)] ">
+    <div className="flex h-full flex-col">
+      <section
+        className="
+          grid h-full min-h-0 gap-4
+          lg:grid-cols-[minmax(0,8fr)_minmax(0,5fr)]
+        "
+      >
+        {/* 왼쪽 컬럼 */}
         <div className="flex h-full flex-col gap-4">
           <div className="flex-[1] rounded-2xl border border-[#E6E6E7] bg-white p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-slate-900">Positions</h2>
 
-            <div className="flex h-full flex-col gap-8 lg:flex-row lg:items-center ">
+            <div className="flex h-full flex-col gap-8 lg:flex-row lg:items-center">
               <div className="flex justify-center lg:justify-start">
                 <PositionsPieChart data={pieData} />
               </div>
@@ -60,12 +76,14 @@ export default async function DashboardPage() {
               </div>
             </div>
           </div>
+
           <div className="flex-[5]">
             <RecommendedCandidates candidates={recommendedCandidates} />
           </div>
         </div>
 
-        <div className="flex flex-col gap-4">
+        {/* 오른쪽 컬럼 */}
+        <div className="flex h-full flex-col gap-4">
           <QuickSettings />
           <InterviewLog />
         </div>
