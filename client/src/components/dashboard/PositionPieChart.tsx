@@ -18,6 +18,12 @@ export default function PositionsPieChart({
 
   return (
     <div className="relative aspect-square w-40 md:w-48">
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-2xl font-bold text-slate-900">
+          {employmentRate}%
+        </span>
+        <span className="mt-1 text-xs text-slate-500">employment rate</span>
+      </div>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -37,12 +43,6 @@ export default function PositionsPieChart({
       </ResponsiveContainer>
 
       {/* 가운데 고용률 표시 */}
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-bold text-slate-900">
-          {employmentRate}%
-        </span>
-        <span className="mt-1 text-xs text-slate-500">employment rate</span>
-      </div>
     </div>
   );
 }

@@ -18,19 +18,42 @@ export type CandidateTableProps = {
   candidates: Candidate[];
 };
 
-export type CandidateDetail = {
-  id: string;
-  positionId: string;
-  name: string;
-  title: string;
-  experience: string;
-  degree: string;
-  score: number;
-  topSkills: string[];
+export type SkillScore = {
+  skill: string;
+  score: number; // 0 ~ 100
 };
 
-export type Position = {
+export type WorkExperienceItem = {
+  company: string;
+  period: string;
+  role: string;
+  description: string;
+};
+
+export type CandidateOverviewSection = {
+  recommendation: string;
+  summary: string;
+  summaryChart: SkillScore[];
+  strength: string[]; // bullet list
+  workExperience: WorkExperienceItem[];
+};
+
+export type CandidateDetail = {
   id: string;
+  name: string;
   title: string;
-  applicants: number;
+  positionId: string;
+  positionTitle: string;
+
+  experienceYears: number;
+  experienceLabel: string; // "3 years"
+  degree: string; // "Bachelor"
+  status: string; // "In Progress" 등
+
+  score: number;
+  keywords: string[];
+
+  sections: {
+    overview: CandidateOverviewSection;
+  };
 };
