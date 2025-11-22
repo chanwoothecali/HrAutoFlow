@@ -43,7 +43,7 @@ class CandidateService:
             if not text or len(text) < 50:
                 raise Exception("추출된 텍스트가 너무 짧습니다.")
 
-            print(f"[Step 1] ✅ 추출 완료: {len(text)} characters")
+            print(f"[Step 1] 추출 완료: {len(text)} characters")
 
             resume.extracted_text = text
             db.commit()
@@ -66,12 +66,12 @@ class CandidateService:
                 }
             )
 
-            print(f"[Step 2] ✅ 분할 완료: {len(documents)} chunks")
+            print(f"[Step 2] 분할 완료: {len(documents)} chunks")
             for i, doc in enumerate(documents[:3]):
                 print(f"  - Chunk {i}: {len(doc.page_content)} chars")
 
             # ============================================
-            # 3. 임베딩 & Vector DB 저장 (⭐ 동기 방식)
+            # 3. 임베딩 & Vector DB 저장 ( 동기 방식)
             # ============================================
             print(f"\n[Step 3] 임베딩 & Vector DB 저장 중...")
             resume.processing_status = "embedding"
@@ -80,7 +80,7 @@ class CandidateService:
             for i, doc in enumerate(documents):
                 print(f"  - Embedding chunk {i + 1}/{len(documents)}...")
 
-                # ⭐ 동기 방식으로 임베딩 생성
+                #  동기 방식으로 임베딩 생성
                 embedding = llm_service.embeddings.embed_query(doc.page_content)
 
                 # DB에 저장
@@ -96,7 +96,7 @@ class CandidateService:
 
             db.commit()
 
-            print(f"[Step 3] ✅ Vector DB 저장 완료: {len(documents)} vectors")
+            print(f"[Step 3] Vector DB 저장 완료: {len(documents)} vectors")
 
             # ============================================
             # 4. 이력서 자동 분석 (병렬 실행)
@@ -142,7 +142,7 @@ class CandidateService:
                 print(f"  ⚠️ 경력 추출 실패: {experiences}")
                 experiences = []
 
-            print(f"[Step 4] ✅ 분석 완료")
+            print(f"[Step 4] 분석 완료")
             print(f"  - 요약: {len(summary)} chars")
             print(f"  - 강점: {len(strengths)} chars")
             print(f"  - 면접 질문: {len(questions)}개")
@@ -171,10 +171,10 @@ class CandidateService:
             resume.processing_status = "completed"
             db.commit()
 
-            print(f"[Step 5] ✅ DB 저장 완료: analysis_id={analysis.id}")
+            print(f"[Step 5] DB 저장 완료: analysis_id={analysis.id}")
 
             print(f"\n{'=' * 60}")
-            print(f"[Pipeline] ✅ 완료: resume_id={resume_id}")
+            print(f"[Pipeline] 완료: resume_id={resume_id}")
             print(f"{'=' * 60}\n")
 
             return {

@@ -256,8 +256,8 @@ SELECT
     COUNT(*) as total_questions,
     COUNT(CASE WHEN is_good_case = true THEN 1 END) as good_cases,
     COUNT(CASE WHEN is_good_case = false THEN 1 END) as bad_cases,
-    ROUND(AVG(relevance_score)::numeric, 2) as avg_relevance_score,  -- ⭐ ::numeric 추가
-    ROUND(AVG(feedback_rating)::numeric, 1) as avg_rating,            -- ⭐ ::numeric 추가
+    ROUND(AVG(relevance_score)::numeric, 2) as avg_relevance_score,  --  ::numeric 추가
+    ROUND(AVG(feedback_rating)::numeric, 1) as avg_rating,            --  ::numeric 추가
     COUNT(DISTINCT resume_id) as resumes_with_qa
 FROM qa_history;
 
@@ -268,7 +268,7 @@ SELECT
     a.position,
     COUNT(qa.id) as question_count,
     COUNT(CASE WHEN qa.is_good_case = true THEN 1 END) as good_answers,
-    ROUND(AVG(qa.relevance_score)::numeric, 2) as avg_relevance  -- ⭐ 수정
+    ROUND(AVG(qa.relevance_score)::numeric, 2) as avg_relevance  --  수정
 FROM applicants a
 JOIN resumes r ON a.id = r.applicant_id
 JOIN qa_history qa ON r.id = qa.resume_id
@@ -356,7 +356,7 @@ SELECT jsonb_build_object(
                 'avg_score', avg_sc,
                 'avg_experience', avg_exp,
                 'max_score', max_sc
-            ) ORDER BY cnt DESC  -- ⭐ ORDER BY 추가 가능
+            ) ORDER BY cnt DESC  --  ORDER BY 추가 가능
         )
         FROM (
             SELECT

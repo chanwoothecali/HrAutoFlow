@@ -110,7 +110,7 @@ class VectorStore(Base):
     chunk_index = Column(BigInteger)
     content = Column(Text)
     embedding = Column(Vector(768))  # pgvector Vector type
-    meta_data = Column(JSONB)  # ⭐ metadata → meta_data 로 변경
+    meta_data = Column(JSONB)  #  metadata → meta_data 로 변경
     created_at = Column(TIMESTAMP, server_default=func.now())
 
 
@@ -141,7 +141,7 @@ class GoodCaseVector(Base):
     answer = Column(Text, nullable=False)
     context = Column(Text)
     embedding = Column(Text)  # pgvector Vector type
-    meta_data = Column(JSONB)  # ⭐ metadata → meta_data 로 변경
+    meta_data = Column(JSONB)  #  metadata → meta_data 로 변경
     created_at = Column(TIMESTAMP, server_default=func.now())
 
     # Relationships

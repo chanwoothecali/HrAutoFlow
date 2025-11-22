@@ -37,7 +37,7 @@ class LLMService:
                 base_url=settings.OLLAMA_BASE_URL,
             )
 
-            print("✅ OpenAI LLM 및 Embeddings 초기화 완료")
+            print("OpenAI LLM 및 Embeddings 초기화 완료")
 
         else:  # ollama (기본값)
             # Ollama LLM (Llama3)
@@ -54,7 +54,7 @@ class LLMService:
                 base_url=settings.OLLAMA_BASE_URL,
             )
 
-            print("✅ Ollama LLM 및 Embeddings 초기화 완료")
+            print("Ollama LLM 및 Embeddings 초기화 완료")
 
             # Text Splitter (공통)
         self.text_splitter = RecursiveCharacterTextSplitter(
@@ -86,12 +86,12 @@ class LLMService:
         """이력서 요약 생성"""
         prompt = PromptTemplate(
             template="""You are an expert HR analyst. Summarize the following resume in 3-4 concise sentences.
-Focus on: key experience, technical skills, and main strengths.
-
-Resume:
-{text}
-
-Summary (in Korean):""",
+                        Focus on: key experience, technical skills, and main strengths.
+                        
+                        Resume:
+                        {text}
+                        
+                        Summary (in Korean):""",
             input_variables=["text"]
         )
 
@@ -108,17 +108,17 @@ Summary (in Korean):""",
         """강점 분석"""
         prompt = PromptTemplate(
             template="""Analyze the following resume and identify 3 main strengths.
-Each strength should be backed by specific experience or achievements.
-
-Resume:
-{text}
-
-Format (in Korean):
-1. [첫 번째 강점]
-2. [두 번째 강점]
-3. [세 번째 강점]
-
-Strengths:""",
+                        Each strength should be backed by specific experience or achievements.
+                        
+                        Resume:
+                        {text}
+                        
+                        Format (in Korean):
+                        1. [첫 번째 강점]
+                        2. [두 번째 강점]
+                        3. [세 번째 강점]
+                        
+                        Strengths:""",
             input_variables=["text"]
         )
 
@@ -139,20 +139,20 @@ Strengths:""",
         """면접 질문 생성"""
         prompt = PromptTemplate(
             template="""Based on this resume and the position ({position}), generate 5 interview questions.
-
-Resume:
-{text}
-
-Return ONLY a valid JSON array in this exact format:
-[
-    {{"question": "question text in Korean", "category": "technical", "difficulty": "medium"}},
-    {{"question": "question text in Korean", "category": "behavioral", "difficulty": "easy"}},
-    {{"question": "question text in Korean", "category": "experience", "difficulty": "hard"}},
-    {{"question": "question text in Korean", "category": "technical", "difficulty": "medium"}},
-    {{"question": "question text in Korean", "category": "behavioral", "difficulty": "medium"}}
-]
-
-JSON:""",
+                        
+                        Resume:
+                        {text}
+                        
+                        Return ONLY a valid JSON array in this exact format:
+                        [
+                            {{"question": "question text in Korean", "category": "technical", "difficulty": "medium"}},
+                            {{"question": "question text in Korean", "category": "behavioral", "difficulty": "easy"}},
+                            {{"question": "question text in Korean", "category": "experience", "difficulty": "hard"}},
+                            {{"question": "question text in Korean", "category": "technical", "difficulty": "medium"}},
+                            {{"question": "question text in Korean", "category": "behavioral", "difficulty": "medium"}}
+                        ]
+                        
+                        JSON:""",
             input_variables=["text", "position"]
         )
 
@@ -208,14 +208,14 @@ JSON:""",
         """스킬 추출 및 점수화"""
         prompt = PromptTemplate(
             template="""Extract technical skills from this resume and rate proficiency (0-100).
-
-Resume:
-{text}
-
-Return ONLY a valid JSON object:
-{{"Python": 90, "SQL": 85, "Docker": 75, "AWS": 70}}
-
-JSON:""",
+                        
+                        Resume:
+                        {text}
+                        
+                        Return ONLY a valid JSON object:
+                        {{"Python": 90, "SQL": 85, "Docker": 75, "AWS": 70}}
+                        
+                        JSON:""",
             input_variables=["text"]
         )
 
@@ -242,22 +242,22 @@ JSON:""",
         prompt = PromptTemplate(
             template="""Extract work experience from this resume.
 
-Resume:
-{text}
-
-Return ONLY a valid JSON array:
-[
-    {{
-        "title": "Backend Engineer",
-        "company": "Company Name",
-        "period": "2023.01 - Present",
-        "achievements": ["achievement 1", "achievement 2"]
-    }}
-]
-
-JSON:""",
-            input_variables=["text"]
-        )
+                        Resume:
+                        {text}
+                        
+                        Return ONLY a valid JSON array:
+                        [
+                            {{
+                                "title": "Backend Engineer",
+                                "company": "Company Name",
+                                "period": "2023.01 - Present",
+                                "achievements": ["achievement 1", "achievement 2"]
+                            }}
+                        ]
+                        
+                        JSON:""",
+                                    input_variables=["text"]
+                                )
 
         chain = prompt | self.llm | StrOutputParser()
 

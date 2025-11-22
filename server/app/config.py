@@ -61,7 +61,7 @@ def get_settings():
 
 settings = get_settings()
 
-# ⭐ 초기화 시 비밀번호 인코딩 확인 (디버깅용)
+#  초기화 시 비밀번호 인코딩 확인 (디버깅용)
 if __name__ == "__main__":
     print(f"DB_PASSWORD (원본): {settings.DB_PASSWORD}")
     print(f"DB_PASSWORD (인코딩): {quote_plus(settings.DB_PASSWORD)}")

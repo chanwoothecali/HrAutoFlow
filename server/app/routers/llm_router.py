@@ -76,7 +76,7 @@ async def ask_question(
 
                     relevance_score = float(rows[0].similarity) if rows else 0.0
 
-                print(f"[RAG] ✅ 답변 생성 완료: resume_id={resume_id}")
+                print(f"[RAG] 답변 생성 완료: resume_id={resume_id}")
 
                 # QA History 저장 (선택사항)
                 # from app.models import QAHistory
@@ -166,7 +166,7 @@ async def submit_feedback(
             db.add(good_case)
             db.commit()
 
-            print(f"[Feedback] ✅ Good Case 저장 완료")
+            print(f"[Feedback] Good Case 저장 완료")
 
         return {
             "success": True,

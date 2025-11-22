@@ -109,7 +109,7 @@ async def upload_resume(
         print(f"[Upload] resume 저장: id={resume.id}")
 
         # 7. 백그라운드 작업 - 이력서 처리 파이프라인 실행
-        # ⭐ 여기서 텍스트 추출 → 분할 → 임베딩 → Vector DB 저장이 일어남
+        #  여기서 텍스트 추출 → 분할 → 임베딩 → Vector DB 저장이 일어남
         background_tasks.add_task(
             candidate_service.process_resume_pipeline,
             resume_id=resume.id,

@@ -20,7 +20,7 @@ def init_db():
         # 모든 테이블 생성
         Base.metadata.create_all(bind=engine)
 
-        print("✅ Tables created successfully!")
+        print("Tables created successfully!")
         print("\nCreated tables:")
         print("  - uploaded_file")
         print("  - positions")
@@ -42,7 +42,7 @@ def drop_all_tables():
 
     try:
         Base.metadata.drop_all(bind=engine)
-        print("✅ All tables dropped!")
+        print("All tables dropped!")
     except Exception as e:
         print(f"❌ Error dropping tables: {e}")
         raise

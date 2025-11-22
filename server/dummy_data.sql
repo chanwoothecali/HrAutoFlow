@@ -180,7 +180,7 @@ SELECT
     'resume_' || r.id || '.pdf',
     0,
     LEFT(r.extracted_text, 500),
-    random_vec.vec::vector,  -- ⭐ LATERAL로 생성한 벡터
+    random_vec.vec::vector,  --  LATERAL로 생성한 벡터
     jsonb_build_object('doc_id', 'resume_' || r.id, 'resume_id', r.id, 'chunk_index', 0),
     r.created_at
 FROM resumes r
@@ -257,7 +257,7 @@ SELECT
     qa.question,
     qa.answer,
     array_to_string(qa.retrieved_chunks, E'\n'),
-    random_vec.vec::vector,  -- ⭐ LATERAL로 생성한 벡터
+    random_vec.vec::vector,  --  LATERAL로 생성한 벡터
     jsonb_build_object('resume_id', qa.resume_id, 'relevance_score', qa.relevance_score, 'rating', qa.feedback_rating),
     qa.created_at
 FROM qa_history qa
