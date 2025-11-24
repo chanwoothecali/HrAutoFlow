@@ -117,11 +117,13 @@ export default function ApplicantsPage() {
 
     try {
       // FormData 생성
+      // 여기 수정해야함
       const formData = new FormData();
-      formData.append('name', newForm.name);
-      formData.append('email', newForm.email);
-      formData.append('position_id', newForm.positionId);
-      formData.append('resume', newForm.resumeFile);
+    formData.append('file', newForm.resumeFile);      // file (필수)
+    formData.append('name', newForm.name);            // name (필수)
+    formData.append('email', newForm.email);          // email (선택)
+    const selectedPosition = positions.find(p => p.id === newForm.positionId);
+    formData.append('position', selectedPosition?.title || '');
 
       // Next.js API Route 호출
       const newApplicant = await apiClient.applicants.create(formData);

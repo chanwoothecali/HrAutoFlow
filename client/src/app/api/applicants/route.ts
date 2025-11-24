@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
 
     // FastAPI로 FormData 전달
-    const response = await fetch(`${FASTAPI_BASE_URL}/applicants`, {
+    const response = await fetch(`${FASTAPI_BASE_URL}/upload/`, {
       method: 'POST',
       body: formData, // FormData 그대로 전달
     });
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data, { status: 201 });
   } catch (error) {
-    console.error('Error in POST /api/applicants:', error);
+    console.error('Error in POST /api/upload:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
