@@ -1,17 +1,52 @@
-import { NextResponse } from "next/server";
-import axios from "axios";
+// app/api/ask/route.ts
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(req: Request) {
+const FASTAPI_BASE_URL = process.env.FASTAPI_BASE_URL || 'http://localhost:8000/api';
+
+/**
+ * POST /api/ask
+ * 이력서에 대한 질문 (RAG 기반 QA)
+ * Body: { resumeId: string, question: string }
+ */
+export async function POST(request: NextRequest) {
   try {
-    const { prompt } = await req.json();
+    const body = await request.json();
+    const { resumeId, question } = body;
 
-    const res = await axios.post("http://localhost:8000/api/llm/ask", { prompt });
+    if (!resumeId || !question) {
+      return NextResponse.json(
+        { error: 'resumeId and question are required' },
+        { status: 400 }
+      );
+    }
 
-    // axios는 res.data로 바로 접근 (await 불필요)
-    return NextResponse.json(res.data);
+    // FastAPI로 요청 전달
+    const response = await fetch(`${FASTAPI_BASE_URL}/ask`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        resume_id: resumeId,
+        question: question,
+      }),
+    });
 
-  } catch (err) {
-    console.error("API Error:", err);
-    return NextResponse.json({ error: "서버 에러" }, { status: 500 });
+    if (!response.ok) {
+      const errorText = await response.text();
+      return NextResponse.json(
+        { error: 'Failed to process question', details: errorText },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Error in /api/ask:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

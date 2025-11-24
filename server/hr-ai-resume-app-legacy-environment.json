@@ -1,0 +1,472 @@
+{
+  "uuid": "2f37460f-685a-44b9-813a-02ffaf603391",
+  "name": "HR AI Resume App (Legacy)",
+  "port": 3001,
+  "hostname": "0.0.0.0",
+  "endpointPrefix": "",
+  "latency": 0,
+  "routes": [
+    {
+      "uuid": "adb54f7b-86a3-46ba-9b86-981ba09b16bd",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "positions/backend/candidates",
+      "responses": [
+        {
+          "uuid": "064611c1-9e22-46c5-af47-d833f3e9cd95",
+          "body": "[\n  {\n    \"id\": \"4f7a7c1e-2e3d-4c6d-9a63-f0f5e6a9d111\",\n    \"positionId\": \"backend\",\n    \"name\": \"김지훈\",\n    \"email\": \"kimjh@example.com\",\n    \"positionTitle\": \"Backend Developer\",\n    \"department\": \"Engineering\",\n    \"status\": \"In Progress\",\n    \"score\": 92\n  },\n  {\n    \"id\": \"c3d9a2b1-7e4f-4b8a-8c21-a5b6c7d8e933\",\n    \"positionId\": \"backend\",\n    \"name\": \"이민아\",\n    \"email\": \"leema@example.com\",\n    \"positionTitle\": \"Backend Developer\",\n    \"department\": \"Engineering\",\n    \"status\": \"In Progress\",\n    \"score\": 82\n  },\n  {\n    \"id\": \"e1f2a3b4-9c8d-4e7f-b6a5-c4d3e2f1a655\",\n    \"positionId\": \"backend\",\n    \"name\": \"최유진\",\n    \"email\": \"choiyj@example.com\",\n    \"positionTitle\": \"Backend Developer\",\n    \"department\": \"Engineering\",\n    \"status\": \"Interview\",\n    \"score\": 76\n  }\n]\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "758d3d51-57d2-4dab-a232-75f8a5b2d325",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "stats/positions",
+      "responses": [
+        {
+          "uuid": "23161302-c8a3-4ba1-b33f-1c7de44e03cd",
+          "body": "{\n  \"new\": 0,\n  \"inProgress\": 4,\n  \"finalInterview\": 1,\n  \"hired\": 0\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "bc8cd1e8-74d8-4537-9747-d76644557c00",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "positions",
+      "responses": [
+        {
+          "uuid": "c162d551-958b-453f-91da-facc0f3115b2",
+          "body": "[\n  {\n    \"id\": \"backend\",\n    \"title\": \"Backend Developer\",\n    \"department\": \"Engineering\",\n    \"techStack\": \"Python, Django, REST, Docker\",\n    \"minYears\": \"3years\",\n    \"projectExperience\": \"대규모 트래픽 결제/정산 시스템 백엔드 개발 경험\",\n    \"preferred\": \"핀테크 도메인 경험, AWS 운영 경험\",\n    \"headcount\": \"2\",\n    \"status\": \"Open\",\n    \"applicants\": 3\n  },\n  {\n    \"id\": \"data\",\n    \"title\": \"Data Engineer\",\n    \"department\": \"Data Platform\",\n    \"techStack\": \"Python, SQL, Airflow, Spark\",\n    \"minYears\": \"4years\",\n    \"projectExperience\": \"데이터 파이프라인 설계 및 운영, DW/DM 구축 경험\",\n    \"preferred\": \"대용량 로그 처리, 클라우드 데이터웨어하우스 경험\",\n    \"headcount\": \"1\",\n    \"status\": \"Open\",\n    \"applicants\": 2\n  }\n]\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "9688594f-67d9-4ff5-80bf-81707b913afe",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "positions/data/candidates",
+      "responses": [
+        {
+          "uuid": "0c2e778f-1447-4fdb-ab1b-0e7df26818b0",
+          "body": "[\n  {\n    \"id\": \"91c2b5d4-5f1a-4c87-9d2b-3c4e7f8a9b22\",\n    \"positionId\": \"data\",\n    \"name\": \"박서현\",\n    \"email\": \"parksh@example.com\",\n    \"positionTitle\": \"Data Engineer\",\n    \"department\": \"Data Platform\",\n    \"status\": \"In Progress\",\n    \"score\": 88\n  },\n  {\n    \"id\": \"6a8f2c3d-1b4e-4f7a-9c52-d1e2f3a4b544\",\n    \"positionId\": \"data\",\n    \"name\": \"정우성\",\n    \"email\": \"jungws@example.com\",\n    \"positionTitle\": \"Data Engineer\",\n    \"department\": \"Data Platform\",\n    \"status\": \"In Progress\",\n    \"score\": 79\n  }\n]\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "3694f400-3649-4937-a4f6-1f046d615ee2",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "candidates/recommended",
+      "responses": [
+        {
+          "uuid": "708ce5ee-57d4-424a-b171-ec4e70e17708",
+          "body": "[\n  {\n    \"id\": \"4f7a7c1e-2e3d-4c6d-9a63-f0f5e6a9d111\",\n    \"name\": \"김지훈\",\n    \"email\": \"kimjh@example.com\",\n    \"role\": \"Backend Developer\",\n    \"score\": 92,\n    \"positionId\": \"backend\"\n  },\n  {\n    \"id\": \"91c2b5d4-5f1a-4c87-9d2b-3c4e7f8a9b22\",\n    \"name\": \"박서현\",\n    \"email\": \"parksh@example.com\",\n    \"role\": \"Data Engineer\",\n    \"score\": 88,\n    \"positionId\": \"data\"\n  },\n  {\n    \"id\": \"c3d9a2b1-7e4f-4b8a-8c21-a5b6c7d8e933\",\n    \"name\": \"이민아\",\n    \"email\": \"leema@example.com\",\n    \"role\": \"Backend Developer\",\n    \"score\": 82,\n    \"positionId\": \"backend\"\n  },\n  {\n    \"id\": \"6a8f2c3d-1b4e-4f7a-9c52-d1e2f3a4b544\",\n    \"name\": \"정우성\",\n    \"email\": \"jungws@example.com\",\n    \"role\": \"Data Engineer\",\n    \"score\": 79,\n    \"positionId\": \"data\"\n  },\n  {\n    \"id\": \"e1f2a3b4-9c8d-4e7f-b6a5-c4d3e2f1a655\",\n    \"name\": \"최유진\",\n    \"email\": \"choiyj@example.com\",\n    \"role\": \"Backend Developer\",\n    \"score\": 76,\n    \"positionId\": \"backend\"\n  }\n]\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "bf61503d-accf-413b-b359-21e2e6974fb3",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "candidates/4f7a7c1e-2e3d-4c6d-9a63-f0f5e6a9d111",
+      "responses": [
+        {
+          "uuid": "7a93f23f-f780-45f0-a12e-8a7f294eb564",
+          "body": "{\n  \"id\": \"4f7a7c1e-2e3d-4c6d-9a63-f0f5e6a9d111\",\n  \"name\": \"김지훈\",\n  \"email\": \"kimjh@example.com\",\n  \"title\": \"Software Engineer\",\n  \"positionId\": \"backend\",\n  \"positionTitle\": \"Backend Developer\",\n  \"experienceYears\": 3,\n  \"experienceLabel\": \"3 years\",\n  \"education\": \"Bachelor\",\n  \"status\": \"In Progress\",\n  \"score\": 92,\n  \"keywords\": [\"Python\", \"SQL\", \"REST\", \"Docker\"],\n  \"skills\": [\"Python\", \"SQL\", \"REST API\", \"Docker\"],\n  \"recommendation\": \"대규모 트래픽 백엔드 API와 데이터 파이프라인을 모두 경험한 후보로, 안정적인 서비스 운영과 비용 최적화에 강점을 보입니다.\",\n  \"sections\": {\n    \"overview\": {\n      \"summary\": \"3년차 백엔드 엔지니어로 결제·정산, 로그 수집, 모니터링 API를 설계·구현했습니다. 장애 대응과 성능 튜닝 경험이 풍부합니다.\",\n      \"summaryChart\": [\n        { \"skill\": \"Python\", \"score\": 90 },\n        { \"skill\": \"SQL\", \"score\": 80 },\n        { \"skill\": \"REST\", \"score\": 85 },\n        { \"skill\": \"Docker\", \"score\": 70 }\n      ],\n      \"strength\": [\n        \"서비스 장애 상황에서 원인 분석과 롤백/핫픽스 경험이 풍부함\",\n        \"쿼리 튜닝과 인덱스 설계를 통한 실질적인 성능 개선 경험\",\n        \"로그/모니터링 지표를 기반으로 한 운영 자동화에 관심이 많음\"\n      ],\n      \"workExperience\": [\n        {\n          \"company\": \"핀테크 스타트업 PAYLINK\",\n          \"period\": \"2022.02 - 현재\",\n          \"role\": \"Backend Engineer\",\n          \"description\": \"결제 승인/취소 API, 정산 배치, 내부 어드민용 REST API 개발 및 운영. 월 200만 건 이상 트랜잭션 처리.\"\n        },\n        {\n          \"company\": \"커머스 플랫폼 SHOPNOW\",\n          \"period\": \"2020.03 - 2022.01\",\n          \"role\": \"Junior Backend Developer\",\n          \"description\": \"주문·배송 도메인 API 유지보수 및 신규 기능 개발, Redis 기반 캐시 적용으로 응답 시간 30% 단축.\"\n        }\n      ]\n    }\n  }\n}\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "0761b83a-b909-4093-8d30-da184635430a",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "candidates/91c2b5d4-5f1a-4c87-9d2b-3c4e7f8a9b22",
+      "responses": [
+        {
+          "uuid": "1e44db83-cc02-4fb2-935d-4fb23055bcf7",
+          "body": "{\n  \"id\": \"91c2b5d4-5f1a-4c87-9d2b-3c4e7f8a9b22\",\n  \"name\": \"박서현\",\n  \"email\": \"parksh@example.com\",\n  \"title\": \"Data Engineer\",\n  \"positionId\": \"data\",\n  \"positionTitle\": \"Data Engineer\",\n  \"experienceYears\": 4,\n  \"experienceLabel\": \"4 years\",\n  \"education\": \"Master\",\n  \"status\": \"In Progress\",\n  \"score\": 88,\n  \"keywords\": [\"Python\", \"ETL\", \"Airflow\", \"SQL\"],\n  \"skills\": [\"Python\", \"SQL\", \"Airflow\", \"ETL Pipeline\"],\n  \"recommendation\": \"데이터 파이프라인 설계와 운영에 강점을 가진 데이터 엔지니어로, 안정적인 배치 운영과 데이터 품질 관리에 탁월합니다.\",\n  \"sections\": {\n    \"overview\": {\n      \"summary\": \"대용량 로그 데이터를 수집·정제·적재하는 ETL 파이프라인을 설계하고 운영해 왔습니다. 주로 Airflow와 Python을 활용하여 배치 워크플로우를 구성했습니다.\",\n      \"summaryChart\": [\n        { \"skill\": \"Python\", \"score\": 85 },\n        { \"skill\": \"SQL\", \"score\": 88 },\n        { \"skill\": \"Airflow\", \"score\": 90 },\n        { \"skill\": \"ETL Pipeline\", \"score\": 87 }\n      ],\n      \"strength\": [\n        \"복잡한 의존 관계를 가진 ETL 플로우를 구조적으로 설계하는 능력\",\n        \"데이터 품질 체크(누락, 중복, 이상치)에 대한 체계적인 모니터링 구축 경험\",\n        \"비즈니스 지표를 이해하고, 필요한 데이터 마트를 직접 설계·구현 가능\"\n      ],\n      \"workExperience\": [\n        {\n          \"company\": \"데이터 분석 회사 ANALYTICA\",\n          \"period\": \"2021.01 - 현재\",\n          \"role\": \"Data Engineer\",\n          \"description\": \"광고/마케팅 데이터 수집 파이프라인 구축, Airflow 기반 스케줄링 및 모니터링 시스템 운영.\"\n        },\n        {\n          \"company\": \"온라인 서비스 플랫폼 LINKUP\",\n          \"period\": \"2019.02 - 2020.12\",\n          \"role\": \"Junior Data Engineer\",\n          \"description\": \"로그 스키마 정리, 데이터 웨어하우스 적재 작업 보조, 기본적인 SQL 리포트 작성.\"\n        }\n      ]\n    }\n  }\n}\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "255f681d-a25b-4787-9177-1b8933ea66bc",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "candidates/c3d9a2b1-7e4f-4b8a-8c21-a5b6c7d8e933",
+      "responses": [
+        {
+          "uuid": "e05a622a-a0e7-4222-906f-d0998981cfbf",
+          "body": "{\n  \"id\": \"c3d9a2b1-7e4f-4b8a-8c21-a5b6c7d8e933\",\n  \"name\": \"이민아\",\n  \"email\": \"leema@example.com\",\n  \"title\": \"Backend Developer\",\n  \"positionId\": \"backend\",\n  \"positionTitle\": \"Backend Developer\",\n  \"experienceYears\": 2,\n  \"experienceLabel\": \"2 years\",\n  \"education\": \"Bachelor\",\n  \"status\": \"In Progress\",\n  \"score\": 82,\n  \"keywords\": [\"Node.js\", \"TypeScript\", \"REST\", \"MongoDB\"],\n  \"skills\": [\"Node.js\", \"TypeScript\", \"REST API\", \"MongoDB\"],\n  \"recommendation\": \"Node.js 기반의 웹 서비스 개발 경험이 풍부하고, 클린 코드와 테스트 작성에 관심이 많은 성장형 백엔드 개발자입니다.\",\n  \"sections\": {\n    \"overview\": {\n      \"summary\": \"스타트업에서 풀스택에 가까운 역할을 수행하며 Node.js 기반 API 서버와 간단한 어드민 UI까지 함께 개발했습니다.\",\n      \"summaryChart\": [\n        { \"skill\": \"Node.js\", \"score\": 85 },\n        { \"skill\": \"TypeScript\", \"score\": 80 },\n        { \"skill\": \"REST\", \"score\": 78 },\n        { \"skill\": \"MongoDB\", \"score\": 75 }\n      ],\n      \"strength\": [\n        \"요구사항 변경이 잦은 환경에서 빠르게 MVP를 구현하고 개선해 본 경험\",\n        \"테스트 코드(Jest)를 활용한 리팩토링과 안정적인 배포에 관심이 많음\",\n        \"협업 과정에서 프론트엔드와 API 스펙을 함께 설계한 경험\"\n      ],\n      \"workExperience\": [\n        {\n          \"company\": \"소셜 플랫폼 STARTLINE\",\n          \"period\": \"2022.03 - 현재\",\n          \"role\": \"Backend Developer\",\n          \"description\": \"피드/댓글/알림 기능 API 개발 및 운영, JWT 기반 인증/인가 로직 구현.\"\n        }\n      ]\n    }\n  }\n}\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "873b21ce-e00e-42bc-a264-84d1d144517c",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "candidates/6a8f2c3d-1b4e-4f7a-9c52-d1e2f3a4b544",
+      "responses": [
+        {
+          "uuid": "c243c544-e7d2-474f-8aa9-a7cecaae285c",
+          "body": "{\n  \"id\": \"6a8f2c3d-1b4e-4f7a-9c52-d1e2f3a4b544\",\n  \"name\": \"정우성\",\n  \"email\": \"jungws@example.com\",\n  \"title\": \"Data Engineer\",\n  \"positionId\": \"data\",\n  \"positionTitle\": \"Data Engineer\",\n  \"experienceYears\": 5,\n  \"experienceLabel\": \"5 years\",\n  \"education\": \"Bachelor\",\n  \"status\": \"In Progress\",\n  \"score\": 79,\n  \"keywords\": [\"Python\", \"Spark\", \"Data Warehouse\", \"Airflow\"],\n  \"skills\": [\"Python\", \"Spark\", \"Airflow\", \"Data Warehouse\"],\n  \"recommendation\": \"Spark와 데이터 웨어하우스 구축 경험을 갖춘 데이터 엔지니어로, 배치·스트리밍 환경 모두에 익숙한 후보입니다.\",\n  \"sections\": {\n    \"overview\": {\n      \"summary\": \"주로 사용자 이벤트 로그와 운영 데이터를 통합하여 분석용 데이터 마트를 구축해 왔습니다. Spark와 Airflow를 활용한 배치 파이프라인 경험이 많습니다.\",\n      \"summaryChart\": [\n        { \"skill\": \"Python\", \"score\": 82 },\n        { \"skill\": \"Spark\", \"score\": 85 },\n        { \"skill\": \"Airflow\", \"score\": 80 },\n        { \"skill\": \"Data Warehouse\", \"score\": 78 }\n      ],\n      \"strength\": [\n        \"대규모 데이터셋에 대한 Spark 최적화 및 파티셔닝 전략 수립 경험\",\n        \"비즈니스 팀과 직접 협업하여 KPI 정의 및 지표 산출 로직 설계\",\n        \"데이터 카탈로그·스키마 관리 등 문서화에 신경 쓰는 편\"\n      ],\n      \"workExperience\": [\n        {\n          \"company\": \"모빌리티 서비스 MOVIGO\",\n          \"period\": \"2020.01 - 현재\",\n          \"role\": \"Data Engineer\",\n          \"description\": \"운행/결제/위치 데이터 수집 및 통합, BigQuery 기반 데이터 마트 설계, Spark ETL 파이프라인 운영.\"\n        }\n      ]\n    }\n  }\n}\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "77524a20-cfd7-4c15-81da-fbf844716da4",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "candidates/e1f2a3b4-9c8d-4e7f-b6a5-c4d3e2f1a655",
+      "responses": [
+        {
+          "uuid": "6a1eefd4-c7ed-4e05-a447-9c2c4d600970",
+          "body": "{\n  \"id\": \"e1f2a3b4-9c8d-4e7f-b6a5-c4d3e2f1a655\",\n  \"name\": \"최유진\",\n  \"email\": \"choiyj@example.com\",\n  \"title\": \"Backend Developer\",\n  \"positionId\": \"backend\",\n  \"positionTitle\": \"Backend Developer\",\n  \"experienceYears\": 4,\n  \"experienceLabel\": \"4 years\",\n  \"education\": \"Bachelor\",\n  \"status\": \"Interview\",\n  \"score\": 76,\n  \"keywords\": [\"Python\", \"Django\", \"REST\", \"Docker\"],\n  \"skills\": [\"Python\", \"Django\", \"REST API\", \"Docker\"],\n  \"recommendation\": \"교육·콘텐츠 도메인에서 Django 기반 서비스를 운영해 온 백엔드 개발자로, 운영 이슈 대응과 레거시 개선에 강점을 보입니다.\",\n  \"sections\": {\n    \"overview\": {\n      \"summary\": \"4년간 웹 서비스 백엔드를 담당하며 인증·권한, 결제, 어드민 화면용 API를 개발했습니다. 장기 운영 중인 레거시 서비스 개선 경험이 많습니다.\",\n      \"summaryChart\": [\n        { \"skill\": \"Python\", \"score\": 80 },\n        { \"skill\": \"Django\", \"score\": 78 },\n        { \"skill\": \"REST\", \"score\": 75 },\n        { \"skill\": \"Docker\", \"score\": 70 }\n      ],\n      \"strength\": [\n        \"운영 이슈에 대한 책임감이 강하고, 로그 기반 원인 분석에 익숙함\",\n        \"레거시 코드 리팩토링과 테스트 코드 추가를 꾸준히 진행한 경험\",\n        \"운영/마케팅/CS 팀과의 커뮤니케이션 경험이 많아 요구사항 조율에 능숙함\"\n      ],\n      \"workExperience\": [\n        {\n          \"company\": \"온라인 교육 플랫폼 EDUCARE\",\n          \"period\": \"2020.06 - 현재\",\n          \"role\": \"Backend Developer\",\n          \"description\": \"수강·결제·쿠폰 등 핵심 도메인 API 개발, Celery 기반 비동기 작업 운영 및 관리자 어드민 기능 개선.\"\n        }\n      ]\n    }\n  }\n}\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "dc843ec3-5fc5-4306-99e2-cdab6f53b836",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "applicants",
+      "responses": [
+        {
+          "uuid": "ce182df6-1c2c-4569-beb9-6d5fe7d02d0a",
+          "body": "[\n  {\n    \"id\": \"4f7a7c1e-2e3d-4c6d-9a63-f0f5e6a9d111\",\n    \"positionId\": \"backend\",\n    \"name\": \"김지훈\",\n    \"email\": \"kimjh@example.com\",\n    \"positionTitle\": \"Backend Developer\",\n    \"department\": \"Engineering\",\n    \"status\": \"In Progress\",\n    \"score\": 92\n  },\n  {\n    \"id\": \"c3d9a2b1-7e4f-4b8a-8c21-a5b6c7d8e933\",\n    \"positionId\": \"backend\",\n    \"name\": \"이민아\",\n    \"email\": \"leema@example.com\",\n    \"positionTitle\": \"Backend Developer\",\n    \"department\": \"Engineering\",\n    \"status\": \"In Progress\",\n    \"score\": 82\n  },\n  {\n    \"id\": \"e1f2a3b4-9c8d-4e7f-b6a5-c4d3e2f1a655\",\n    \"positionId\": \"backend\",\n    \"name\": \"최유진\",\n    \"email\": \"choiyj@example.com\",\n    \"positionTitle\": \"Backend Developer\",\n    \"department\": \"Engineering\",\n    \"status\": \"Interview\",\n    \"score\": 76\n  },\n  {\n    \"id\": \"91c2b5d4-5f1a-4c87-9d2b-3c4e7f8a9b22\",\n    \"positionId\": \"data\",\n    \"name\": \"박서현\",\n    \"email\": \"parksh@example.com\",\n    \"positionTitle\": \"Data Engineer\",\n    \"department\": \"Data Platform\",\n    \"status\": \"In Progress\",\n    \"score\": 88\n  },\n  {\n    \"id\": \"6a8f2c3d-1b4e-4f7a-9c52-d1e2f3a4b544\",\n    \"positionId\": \"data\",\n    \"name\": \"정우성\",\n    \"email\": \"jungws@example.com\",\n    \"positionTitle\": \"Data Engineer\",\n    \"department\": \"Data Platform\",\n    \"status\": \"In Progress\",\n    \"score\": 79\n  }\n]\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    }
+  ],
+  "cors": true,
+  "lastMigration": 33,
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "758d3d51-57d2-4dab-a232-75f8a5b2d325"
+    },
+    {
+      "type": "route",
+      "uuid": "3694f400-3649-4937-a4f6-1f046d615ee2"
+    },
+    {
+      "type": "route",
+      "uuid": "bc8cd1e8-74d8-4537-9747-d76644557c00"
+    },
+    {
+      "type": "route",
+      "uuid": "adb54f7b-86a3-46ba-9b86-981ba09b16bd"
+    },
+    {
+      "type": "route",
+      "uuid": "9688594f-67d9-4ff5-80bf-81707b913afe"
+    },
+    {
+      "type": "route",
+      "uuid": "bf61503d-accf-413b-b359-21e2e6974fb3"
+    },
+    {
+      "type": "route",
+      "uuid": "0761b83a-b909-4093-8d30-da184635430a"
+    },
+    {
+      "type": "route",
+      "uuid": "255f681d-a25b-4787-9177-1b8933ea66bc"
+    },
+    {
+      "type": "route",
+      "uuid": "873b21ce-e00e-42bc-a264-84d1d144517c"
+    },
+    {
+      "type": "route",
+      "uuid": "77524a20-cfd7-4c15-81da-fbf844716da4"
+    },
+    {
+      "type": "route",
+      "uuid": "dc843ec3-5fc5-4306-99e2-cdab6f53b836"
+    }
+  ],
+  "folders": [],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "headers": [],
+  "proxyReqHeaders": [],
+  "proxyResHeaders": [],
+  "data": [],
+  "callbacks": []
+}

@@ -13,13 +13,14 @@ async function getDashboardData(): Promise<{
   stats: DashboardStats;
   recommendedCandidates: Candidate[];
 }> {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
   const [statsRes, recommendedRes] = await Promise.all([
-    // 통계
-    fetch('http://localhost:3001/stats/positions', {
+    // Next.js API Routes 호출
+    fetch(`${baseUrl}/api/stats/positions`, {
       cache: 'no-store',
     }),
-    // 추천 지원자 5명
-    fetch('http://localhost:3001/candidates/recommended', {
+    fetch(`${baseUrl}/api/candidates/recommended`, {
       cache: 'no-store',
     }),
   ]);

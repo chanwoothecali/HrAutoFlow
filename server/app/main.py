@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import upload_router, candidates_router, llm_router
+from app.routers import upload_router, llm_router, position_router
 
 app = FastAPI(
     title="HR AutoFlow API",
@@ -13,7 +13,10 @@ app = FastAPI(
 # CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",  # Next.js
+        "http://localhost:3001",  # Mock API (개발용)
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -21,7 +24,7 @@ app.add_middleware(
 
 # 라우터 등록
 app.include_router(upload_router.router)
-app.include_router(candidates_router.router)
+app.include_router(position_router.router)
 app.include_router(llm_router.router)
 
 

@@ -6,34 +6,21 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import type { CandidateDetail } from '@/types/candidate';
 import CandidateOverview from '@/components/candidates/CandidateOverview';
 import type { Position } from '@/types/position';
+import { apiClient } from '@/lib/api-client';
 
-const API_BASE = '/api';
-
-// /api/positions/[positionId]/candidates 응답 타입
-// backend 포지션: title, experience, degree 포함
-// data 포지션: email, positionTitle, department, status 포함
 type CandidateListItem = {
   id: string;
   positionId: string;
   name: string;
-
-  // 옵션 필드들 (엔드포인트에 따라 다를 수 있음)
   email?: string;
-  title?: string; // ex) "Software Engineer"
-  positionTitle?: string; // ex) "Data Engineer"
-  department?: string; // ex) "Data Platform"
-  experience?: string; // ex) "3 years"
-  degree?: string; // ex) "Bachelor"
-  status?: string; // ex) "In Progress"
-
+  title?: string;
+  positionTitle?: string;
+  department?: string;
+  experience?: string;
+  degree?: string;
+  status?: string;
   score: number;
 };
-
-async function fetchJSON<T>(url: string): Promise<T> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`API 요청 실패: ${url}`);
-  return res.json();
-}
 
 export default function CandidatesDetailPage() {
   const router = useRouter();
@@ -41,52 +28,56 @@ export default function CandidatesDetailPage() {
   const candidateIdFromURL = searchParams.get('candidateId');
 
   const [positions, setPositions] = useState<Position[]>([]);
-  const [selectedPositionId, setSelectedPositionId] = useState<string | null>(
-    null
-  );
-
+  const [selectedPositionId, setSelectedPositionId] = useState<string | null>(null);
   const [candidateList, setCandidateList] = useState<CandidateListItem[]>([]);
-  const [selectedCandidate, setSelectedCandidate] =
-    useState<CandidateDetail | null>(null);
+  const [selectedCandidate, setSelectedCandidate] = useState<CandidateDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const activeCandidateId = selectedCandidate?.id ?? candidateIdFromURL ?? null;
 
-  // 1) 포지션 목록은 첫 로딩 때 한 번만
+  // 1) 포지션 목록 로딩
   useEffect(() => {
-    fetchJSON<Position[]>(`${API_BASE}/positions`)
-      .then((data) => {
+    setLoading(true);
+    apiClient.positions
+      .list()
+      .then((data: any) => {
         setPositions(data);
-        // URL에 candidateId 없으면 첫 포지션 선택
         if (!candidateIdFromURL && data.length > 0) {
           setSelectedPositionId(data[0].id);
         }
       })
-      .catch((e) => console.error(e));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      .catch((e) => {
+        console.error('포지션 목록 로딩 실패:', e);
+        setError('포지션 목록을 불러오는데 실패했습니다.');
+      })
+      .finally(() => setLoading(false));
+  }, [candidateIdFromURL]);
 
-  // 2) URL의 candidateId 가 바뀔 때마다 상세 조회 → positionId 도 함께 세팅
+  // 2) URL의 candidateId로 상세 조회
   useEffect(() => {
     if (!candidateIdFromURL) return;
 
-    fetchJSON<CandidateDetail>(`${API_BASE}/candidates/${candidateIdFromURL}`)
-      .then((detail) => {
-        setSelectedCandidate(detail); // 👉 오른쪽 Overview 내용 업데이트
+    apiClient.candidates
+      .getDetail(candidateIdFromURL)
+      .then((detail: any) => {
+        setSelectedCandidate(detail);
         setSelectedPositionId(detail.positionId);
       })
-      .catch((e) => console.error(e));
+      .catch((e) => {
+        console.error('지원자 상세 정보 로딩 실패:', e);
+        setError('지원자 정보를 불러오는데 실패했습니다.');
+      });
   }, [candidateIdFromURL]);
 
-  // 3) 선택된 포지션이 바뀔 때마다 그 포지션의 후보 리스트 조회
+  // 3) 선택된 포지션의 후보 리스트 조회
   useEffect(() => {
     if (!selectedPositionId) return;
 
-    fetchJSON<CandidateListItem[]>(
-      `${API_BASE}/positions/${selectedPositionId}/candidates`
-    )
-      .then((list) => {
+    apiClient.positions
+      .getCandidates(selectedPositionId)
+      .then((list: any) => {
         setCandidateList(list);
-        // URL에 candidateId가 없고 아직 선택된 후보도 없으면 첫 후보를 기본 선택
         if (!candidateIdFromURL && list.length > 0 && !selectedCandidate) {
           const first = list[0];
           router.replace(`/candidates?candidateId=${first.id}`, {
@@ -94,23 +85,31 @@ export default function CandidatesDetailPage() {
           });
         }
       })
-      .catch((e) => console.error(e));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPositionId]);
+      .catch((e) => {
+        console.error('지원자 목록 로딩 실패:', e);
+        setError('지원자 목록을 불러오는데 실패했습니다.');
+      });
+  }, [selectedPositionId, candidateIdFromURL, selectedCandidate, router]);
 
   const currentPosition = useMemo(
     () => positions.find((p) => p.id === selectedPositionId) ?? positions[0],
     [positions, selectedPositionId]
   );
 
-  // 로딩 중/데이터 없는 경우 간단 처리
-  if (positions.length === 0) {
+  if (error) {
     return (
       <div className="space-y-4">
         <h1 className="text-3xl font-bold text-slate-900">지원자 상세</h1>
-        <p className="text-sm text-slate-600">
-          포지션 정보를 불러오는 중입니다.
-        </p>
+        <div className="rounded-lg bg-red-50 p-4 text-red-600">{error}</div>
+      </div>
+    );
+  }
+
+  if (loading || positions.length === 0) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-3xl font-bold text-slate-900">지원자 상세</h1>
+        <p className="text-sm text-slate-600">데이터를 불러오는 중입니다...</p>
       </div>
     );
   }

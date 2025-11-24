@@ -3,14 +3,7 @@
 
 import { Position, PositionStatus } from '@/types/position';
 import { useEffect, useState } from 'react';
-
-const API_BASE = '/api';
-
-async function fetchJSON<T>(url: string): Promise<T> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`API 요청 실패: ${url}`);
-  return res.json();
-}
+import { apiClient } from '@/lib/api-client';
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Position[]>([]);
@@ -18,11 +11,14 @@ export default function JobsPage() {
   const [form, setForm] = useState<Position | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // 첫 로딩: /positions 를 공고 목록으로 사용
+  // 첫 로딩: /api/positions 호출
   useEffect(() => {
-    fetchJSON<Position[]>(`${API_BASE}/positions`)
-      .then((data) => {
+    setLoading(true);
+    apiClient.positions
+      .list()
+      .then((data: any) => {
         setJobs(data);
         if (data.length > 0) {
           setSelectedId(data[0].id);
@@ -30,7 +26,10 @@ export default function JobsPage() {
           setIsNew(false);
         }
       })
-      .catch((e) => console.error(e))
+      .catch((e) => {
+        console.error('포지션 목록 로딩 실패:', e);
+        setError('공고 정보를 불러오는데 실패했습니다.');
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -42,8 +41,6 @@ export default function JobsPage() {
 
   const handleChange = (field: keyof Position, value: string | number) => {
     if (!form) return;
-    // applicants 에 대해서는 handleChange를 호출하지 않기 때문에
-    // 여기서는 그냥 공통 처리만 해도 됨
     setForm({ ...form, [field]: value });
   };
 
@@ -60,38 +57,75 @@ export default function JobsPage() {
       preferred: '',
       headcount: '',
       status: 'Open',
-      applicants: 0, // 새 공고는 기본 0명
+      applicants: 0,
     };
     setForm(draft);
     setSelectedId(newId);
     setIsNew(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form) return;
 
-    if (isNew) {
-      // 새 공고 추가 (applicants는 기본 0으로 유지)
-      setJobs((prev) => [...prev, form]);
-      setIsNew(false);
-    } else {
-      // 기존 공고 수정 (applicants는 폼에서 안 바뀌므로 기존 값 그대로)
-      setJobs((prev) =>
-        prev.map((j) => (j.id === form.id ? (form as Position) : j))
-      );
+    try {
+      if (isNew) {
+        // 새 공고 생성 (실제 API 호출)
+        // TODO: API 구현 후 주석 해제
+        // const created = await apiClient.positions.create(form);
+        // setJobs((prev) => [...prev, created]);
+        // setForm(created);
+        // setSelectedId(created.id);
+
+        // 임시: 프론트엔드에서만 추가
+        setJobs((prev) => [...prev, form]);
+        setIsNew(false);
+        alert('공고가 생성되었습니다. (임시)');
+      } else {
+        // 기존 공고 수정 (실제 API 호출)
+        // TODO: API 구현 후 주석 해제
+        // await apiClient.positions.update(form.id, form);
+
+        // 임시: 프론트엔드에서만 수정
+        setJobs((prev) =>
+          prev.map((j) => (j.id === form.id ? form : j))
+        );
+        alert('공고가 수정되었습니다. (임시)');
+      }
+    } catch (error) {
+      console.error('저장 실패:', error);
+      alert('저장에 실패했습니다.');
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!form) return;
     const ok = window.confirm('이 공고를 삭제하시겠습니까?');
     if (!ok) return;
 
-    setJobs((prev) => prev.filter((j) => j.id !== form.id));
-    setForm(null);
-    setSelectedId(null);
-    setIsNew(false);
+    try {
+      // TODO: API 구현 후 주석 해제
+      // await apiClient.positions.delete(form.id);
+
+      // 임시: 프론트엔드에서만 삭제
+      setJobs((prev) => prev.filter((j) => j.id !== form.id));
+      setForm(null);
+      setSelectedId(null);
+      setIsNew(false);
+      alert('공고가 삭제되었습니다. (임시)');
+    } catch (error) {
+      console.error('삭제 실패:', error);
+      alert('삭제에 실패했습니다.');
+    }
   };
+
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-3xl font-bold text-slate-900">Jobs</h1>
+        <div className="rounded-lg bg-red-50 p-4 text-red-600">{error}</div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -215,7 +249,7 @@ export default function JobsPage() {
                     className="mt-1 w-full rounded-lg border border-[#E6E6E7] px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                     value={form.title}
                     onChange={(e) => handleChange('title', e.target.value)}
-                    placeholder="example:  Backend Developer"
+                    placeholder="예: Backend Developer"
                   />
                 </div>
 
@@ -228,7 +262,7 @@ export default function JobsPage() {
                     className="mt-1 w-full rounded-lg border border-[#E6E6E7] px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                     value={form.department}
                     onChange={(e) => handleChange('department', e.target.value)}
-                    placeholder="example:  Engineering"
+                    placeholder="예: Engineering"
                   />
                 </div>
 
@@ -241,7 +275,7 @@ export default function JobsPage() {
                     className="mt-1 w-full rounded-lg border border-[#E6E6E7] px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                     value={form.techStack}
                     onChange={(e) => handleChange('techStack', e.target.value)}
-                    placeholder="example:  Python, Django, REST, Docker"
+                    placeholder="예: Python, Django, REST, Docker"
                   />
                 </div>
 
@@ -254,7 +288,7 @@ export default function JobsPage() {
                     className="mt-1 w-full rounded-lg border border-[#E6E6E7] px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                     value={form.minYears}
                     onChange={(e) => handleChange('minYears', e.target.value)}
-                    placeholder="example:  3years"
+                    placeholder="예: 3years"
                   />
                 </div>
 
@@ -267,7 +301,7 @@ export default function JobsPage() {
                     className="mt-1 w-full rounded-lg border border-[#E6E6E7] px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                     value={form.headcount}
                     onChange={(e) => handleChange('headcount', e.target.value)}
-                    placeholder="example:  2"
+                    placeholder="예: 2"
                   />
                 </div>
 
@@ -283,7 +317,7 @@ export default function JobsPage() {
                     onChange={(e) =>
                       handleChange('projectExperience', e.target.value)
                     }
-                    placeholder="example:  대규모 트래픽 결제/정산 시스템 백엔드 개발 경험 등"
+                    placeholder="예: 대규모 트래픽 결제/정산 시스템 백엔드 개발 경험 등"
                   />
                 </div>
 
@@ -297,7 +331,7 @@ export default function JobsPage() {
                     rows={2}
                     value={form.preferred}
                     onChange={(e) => handleChange('preferred', e.target.value)}
-                    placeholder="example:  핀테크 도메인 경험, AWS 운영 경험"
+                    placeholder="예: 핀테크 도메인 경험, AWS 운영 경험"
                   />
                 </div>
 

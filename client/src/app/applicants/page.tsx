@@ -3,8 +3,7 @@
 
 import { useEffect, useMemo, useState, useRef } from 'react';
 import type { Position } from '@/types/position';
-
-const API_BASE = '/api';
+import { apiClient } from '@/lib/api-client';
 
 type ApplicantListItem = {
   id: string;
@@ -24,23 +23,19 @@ type NewApplicantForm = {
   resumeFile: File | null;
 };
 
-async function fetchJSON<T>(url: string): Promise<T> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`API 요청 실패: ${url}`);
-  return res.json();
-}
-
 export default function ApplicantsPage() {
   const [applicants, setApplicants] = useState<ApplicantListItem[]>([]);
   const [positions, setPositions] = useState<Position[]>([]);
   const [search, setSearch] = useState('');
-  const [selectedId, setSelectedId] = useState<string | null>(null); // 선택 행 하이라이트용
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isDragging, setIsDragging] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false); // ✅ 추가
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // 이력서 등록 모달 상태
+  // 모달 상태
   const [showModal, setShowModal] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [newForm, setNewForm] = useState<NewApplicantForm>({
     name: '',
     email: '',
@@ -48,20 +43,20 @@ export default function ApplicantsPage() {
     resumeFile: null,
   });
 
-  // 1) 전체 지원자 + 포지션 목록 로딩
+  // 1) 데이터 로딩
   useEffect(() => {
+    setLoading(true);
     Promise.all([
-      fetchJSON<ApplicantListItem[]>(`${API_BASE}/applicants`),
-      fetchJSON<Position[]>(`${API_BASE}/positions`),
+      apiClient.applicants.list(),
+      apiClient.positions.list(),
     ])
-      .then(([apps, pos]) => {
+      .then(([apps, pos]: [any, any]) => {
         setApplicants(apps);
         setPositions(pos);
 
         if (apps.length > 0) {
           setSelectedId(apps[0].id);
         }
-        // 새 지원자 등록 모달 select 기본값 세팅
         if (pos.length > 0) {
           setNewForm((prev) => ({
             ...prev,
@@ -69,7 +64,10 @@ export default function ApplicantsPage() {
           }));
         }
       })
-      .catch((e) => console.error(e))
+      .catch((e) => {
+        console.error('데이터 로딩 실패:', e);
+        setError('데이터를 불러오는데 실패했습니다.');
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -77,19 +75,14 @@ export default function ApplicantsPage() {
   const filteredApplicants = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return applicants;
-    return applicants.filter((a) => {
-      return (
-        a.name.toLowerCase().includes(q) ||
-        a.email.toLowerCase().includes(q) ||
-        a.positionTitle.toLowerCase().includes(q) ||
-        a.department.toLowerCase().includes(q)
-      );
-    });
+    return applicants.filter((a) =>
+      [a.name, a.email, a.positionTitle, a.department].some((field) =>
+        field.toLowerCase().includes(q)
+      )
+    );
   }, [search, applicants]);
 
-  const handleOpenModal = () => {
-    setShowModal(true);
-  };
+  const handleOpenModal = () => setShowModal(true);
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -108,12 +101,11 @@ export default function ApplicantsPage() {
     setNewForm((prev) => ({ ...prev, [field]: value } as NewApplicantForm));
   };
 
-  const handleSubmitNewApplicant: React.FormEventHandler<HTMLFormElement> = (
-    e
-  ) => {
+  const handleSubmitNewApplicant: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
+
     if (!newForm.name || !newForm.email || !newForm.positionId) {
-      alert('이름, 이메일, 지원 부서를 모두 입력해 주세요.');
+      alert('이름, 이메일, 지원 포지션을 모두 입력해 주세요.');
       return;
     }
     if (!newForm.resumeFile) {
@@ -121,33 +113,47 @@ export default function ApplicantsPage() {
       return;
     }
 
-    const pos = positions.find((p) => p.id === newForm.positionId);
+    setSubmitting(true);
 
-    // 실제 구현에서는 여기서 API POST 호출 + 파일 업로드.
-    // 지금은 프론트에서만 리스트에 추가하는 용도.
-    const newItem: ApplicantListItem = {
-      id: `temp-${Date.now()}`,
-      name: newForm.name,
-      email: newForm.email,
-      positionId: newForm.positionId,
-      positionTitle: pos?.title ?? 'Unknown',
-      department: pos?.department ?? '',
-      status: 'New',
-      score: 0,
-    };
+    try {
+      // FormData 생성
+      const formData = new FormData();
+      formData.append('name', newForm.name);
+      formData.append('email', newForm.email);
+      formData.append('position_id', newForm.positionId);
+      formData.append('resume', newForm.resumeFile);
 
-    setApplicants((prev) => [newItem, ...prev]);
-    setSelectedId(newItem.id);
-    handleCloseModal();
+      // Next.js API Route 호출
+      const newApplicant = await apiClient.applicants.create(formData);
+
+      // 리스트에 추가
+      setApplicants((prev) => [newApplicant, ...prev]);
+      setSelectedId(newApplicant.id);
+
+      handleCloseModal();
+      alert('지원자가 성공적으로 등록되었습니다!');
+    } catch (error) {
+      console.error('지원자 등록 실패:', error);
+      alert('지원자 등록에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-3xl font-bold text-slate-900">Applicants</h1>
+        <div className="rounded-lg bg-red-50 p-4 text-red-600">{error}</div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
       <div className="space-y-4">
         <h1 className="text-3xl font-bold text-slate-900">Applicants</h1>
-        <p className="text-sm text-slate-600">
-          지원자 목록을 불러오는 중입니다…
-        </p>
+        <p className="text-sm text-slate-600">지원자 목록을 불러오는 중입니다...</p>
       </div>
     );
   }
@@ -293,6 +299,7 @@ export default function ApplicantsPage() {
               <button
                 type="button"
                 onClick={handleCloseModal}
+                disabled={submitting}
                 className="text-slate-400 hover:text-slate-600"
               >
                 ✕
@@ -309,6 +316,7 @@ export default function ApplicantsPage() {
                   value={newForm.name}
                   onChange={(e) => handleNewFormChange('name', e.target.value)}
                   placeholder="홍길동"
+                  disabled={submitting}
                 />
               </div>
 
@@ -322,6 +330,7 @@ export default function ApplicantsPage() {
                   value={newForm.email}
                   onChange={(e) => handleNewFormChange('email', e.target.value)}
                   placeholder="user@example.com"
+                  disabled={submitting}
                 />
               </div>
 
@@ -335,6 +344,7 @@ export default function ApplicantsPage() {
                   onChange={(e) =>
                     handleNewFormChange('positionId', e.target.value)
                   }
+                  disabled={submitting}
                 >
                   {positions.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -353,17 +363,18 @@ export default function ApplicantsPage() {
                 {/* 드래그 & 드롭 영역 */}
                 <div
                   className={`
-      mt-1 flex flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-6 text-center text-xs
-      transition
-      ${
-        isDragging
-          ? 'border-indigo-500 bg-indigo-50/40'
-          : 'border-[#E6E6E7] bg-slate-50'
-      }
-    `}
+                    mt-1 flex flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-6 text-center text-xs
+                    transition cursor-pointer
+                    ${
+                      isDragging
+                        ? 'border-indigo-500 bg-indigo-50/40'
+                        : 'border-[#E6E6E7] bg-slate-50'
+                    }
+                    ${submitting ? 'opacity-50 cursor-not-allowed' : ''}
+                  `}
                   onDragOver={(e) => {
                     e.preventDefault();
-                    setIsDragging(true);
+                    if (!submitting) setIsDragging(true);
                   }}
                   onDragLeave={(e) => {
                     e.preventDefault();
@@ -372,6 +383,8 @@ export default function ApplicantsPage() {
                   onDrop={(e) => {
                     e.preventDefault();
                     setIsDragging(false);
+                    if (submitting) return;
+
                     const file = e.dataTransfer.files?.[0];
                     if (file && file.type === 'application/pdf') {
                       handleNewFormChange('resumeFile', file);
@@ -380,7 +393,7 @@ export default function ApplicantsPage() {
                     }
                   }}
                   onClick={() => {
-                    fileInputRef.current?.click();
+                    if (!submitting) fileInputRef.current?.click();
                   }}
                 >
                   <p className="mb-1 text-slate-700">
@@ -414,11 +427,11 @@ export default function ApplicantsPage() {
                       e.target.files?.[0] ?? null
                     )
                   }
+                  disabled={submitting}
                 />
 
                 <p className="mt-1 text-[11px] text-slate-400">
-                  현재는 프론트에서만 파일 정보를 보관하며, 실제 업로드/저장은
-                  추후 API 연동 시 구현됩니다.
+                  PDF 파일을 업로드하면 FastAPI 백엔드로 전송되어 처리됩니다.
                 </p>
               </div>
 
@@ -426,15 +439,17 @@ export default function ApplicantsPage() {
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="rounded-full border border-[#E6E6E7] bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                  disabled={submitting}
+                  className="rounded-full border border-[#E6E6E7] bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   취소
                 </button>
                 <button
                   type="submit"
-                  className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                  disabled={submitting}
+                  className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  등록
+                  {submitting ? '등록 중...' : '등록'}
                 </button>
               </div>
             </form>
