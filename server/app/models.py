@@ -53,6 +53,7 @@ class Applicant(Base):
     position = Column(String(100), nullable=False)
     experience_years = Column(Integer)
     education = Column(String(255))
+    department = Column(String(255))
     status = Column(String(50), default='pending')
     score = Column(Integer)
     created_at = Column(TIMESTAMP, server_default=func.now())
