@@ -75,7 +75,7 @@ API 문서: http://localhost:8000/docs
 ReDoc: http://localhost:8000/redoc
 Health Check: http://localhost:8000/health
 
-🗄️ PostgreSQL + PGVector 실행 (SSH 환경)SSH 환경에서 백그라운드 실행bash# 1. SSH 접속
+🗄️ PostgreSQL + PGVector 실행 (SSH 환경)SSH 환경에서 백그라운드 실행bash# 1. SSH 접속 (188.166.253.41)
 ssh your-username@your-server-ip
 
 # 2. Docker 백그라운드로 PostgreSQL + PGVector 실행
