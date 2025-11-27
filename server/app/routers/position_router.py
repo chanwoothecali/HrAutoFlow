@@ -126,12 +126,11 @@ async def get_recommended_candidates(
         limit: int = Query(5, ge=1, le=20),
         db: Session = Depends(get_db)
 ):
-    """
-    GET /candidates/recommended
-    점수 기준 상위 추천 지원자 목록
-    """
+    # position_id가 있는 지원자만 조회 (null 제외)
     candidates = db.query(Applicant).options(
         joinedload(Applicant.position_rel)
+    ).filter(
+        Applicant.position_id.isnot(None)  # ← 추가
     ).order_by(Applicant.score.desc()).limit(limit).all()
 
     return [
@@ -139,9 +138,9 @@ async def get_recommended_candidates(
             "id": str(c.id),
             "name": c.name,
             "email": c.email or "",
-            "role": c.position_rel.title,
+            "role": c.position_rel.title if c.position_rel else "Unknown",
             "score": c.score or 0,
-            "positionId": c.position_rel.title.lower().replace(" ", "")
+            "positionId": c.position_rel.title.lower().replace(" ", "") if c.position_rel else "unknown"
         }
         for c in candidates
     ]
@@ -269,3 +268,68 @@ async def get_all_applicants(
         }
         for a in applicants
     ]
+
+
+# ==========================================
+# 7. 인터뷰 일정 조회
+# ==========================================
+from datetime import datetime, timedelta
+from app.models import Interview, Admin
+
+
+@router.get("/interviews/upcoming")
+async def get_upcoming_interviews(
+        days: int = Query(1, ge=1, le=7, description="조회 기간 (1=오늘, 7=이번주)"),
+        db: Session = Depends(get_db)
+):
+    """
+    GET /interviews/upcoming
+    다가오는 인터뷰 일정 조회
+    """
+    now = datetime.now()
+    end_date = now + timedelta(days=days)
+
+    interviews = db.query(Interview).options(
+        joinedload(Interview.applicant).joinedload(Applicant.position_rel),
+        joinedload(Interview.admin)
+    ).filter(
+        Interview.scheduled_at >= now,
+        Interview.scheduled_at <= end_date,
+        Interview.status.in_(['scheduled', 'in_progress'])
+    ).order_by(Interview.scheduled_at).all()
+
+    result = []
+    for interview in interviews:
+        applicant = interview.applicant
+        position = applicant.position_rel
+        admin = interview.admin
+
+        # 시간 포맷팅
+        scheduled_time = interview.scheduled_at
+        time_diff = scheduled_time - now
+
+        if time_diff.days == 0:
+            time_label = scheduled_time.strftime('%H:%M') + ' Today'
+            badge = 'Today'
+        elif time_diff.days == 1:
+            time_label = scheduled_time.strftime('%H:%M') + ' Tomorrow'
+            badge = None
+        else:
+            time_label = scheduled_time.strftime('%m/%d %H:%M')
+            badge = None
+
+        # interview_kit에서 정보 추출
+        kit = interview.interview_kit or {}
+        duration = kit.get('duration', 45)
+        location = kit.get('location', 'Zoom')
+
+        result.append({
+            'id': interview.id,
+            'timeLabel': time_label,
+            'title': f"{applicant.name} · {position.title if position else '포지션 미정'} 인터뷰",
+            'description': f"인터뷰어: {admin.name if admin else '미정'} · {location} · {duration}분 미팅",
+            'badge': badge,
+            'scheduledAt': scheduled_time.isoformat()
+        })
+
+    return result
