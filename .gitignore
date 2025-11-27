@@ -11,3 +11,5 @@
 /client/.next/
 /server/.idea/
 
+__pycache__/
+*.pyc
