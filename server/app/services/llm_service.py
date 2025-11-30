@@ -428,7 +428,13 @@ class LLMService:
             connection_string: str,
             collection_name: str = "resume_vectors"
     ) -> PGVector:
-        """PGVector 초기화 (langchain_postgres 사용)"""
+        """PGVector 초기화 (langchain_postgres 사용)
+
+        Args:
+            connection_string: Database connection string
+            collection_name: Collection name for vectors
+        """
+        # Use synchronous psycopg2 connection for compatibility
         vectorstore = PGVector(
             embeddings=self.embeddings,
             collection_name=collection_name,
@@ -439,25 +445,75 @@ class LLMService:
 
     async def rag_query(
             self,
-            vectorstore: PGVector,
             question: str,
             doc_id: str,
-            k: int = 5
+            k: int = 5,
+            db_session = None
     ) -> Dict[str, Any]:
-        """RAG 기반 질의응답 - 강화된 프롬프트"""
+        """RAG 기반 질의응답 - 커스텀 VectorStore 사용
+
+        Args:
+            question: 질문
+            doc_id: 문서 ID (예: resume_1)
+            k: 검색할 문서 수
+            db_session: Database session
+        """
 
         try:
-            # 유사도 검색
-            retriever = vectorstore.as_retriever(
-                search_type="similarity",
-                search_kwargs={
-                    "k": k,
-                    "filter": {"doc_id": doc_id}
-                }
-            )
+            from app.models import VectorStore
+            import numpy as np
 
-            # 관련 문서 검색
-            docs = await retriever.ainvoke(question)
+            # 질문 임베딩 생성
+            question_embedding = self.embeddings.embed_query(question)
+
+            # VectorStore에서 doc_id로 필터링하여 벡터 조회
+            vectors = db_session.query(VectorStore).filter(
+                VectorStore.doc_id == doc_id
+            ).all()
+
+            if not vectors:
+                return {
+                    "answer": "해당 이력서에서 관련된 정보를 찾을 수 없습니다.",
+                    "chunks": [],
+                    "relevance_score": 0.0
+                }
+
+            # 코사인 유사도 계산 및 정렬
+            similarities = []
+            for vec in vectors:
+                # Skip if embedding is None or invalid
+                if vec.embedding is None or len(vec.embedding) == 0:
+                    continue
+
+                try:
+                    # 코사인 유사도 계산
+                    vec_norm = np.linalg.norm(vec.embedding)
+                    q_norm = np.linalg.norm(question_embedding)
+
+                    if vec_norm == 0 or q_norm == 0:
+                        continue
+
+                    similarity = np.dot(question_embedding, vec.embedding) / (q_norm * vec_norm)
+                    similarities.append((vec, similarity))
+                except Exception as e:
+                    print(f"[RAG] 유사도 계산 실패: {e}")
+                    continue
+
+            # 유사도 높은 순으로 정렬하고 상위 k개 선택
+            similarities.sort(key=lambda x: x[1], reverse=True)
+            top_docs = similarities[:k]
+
+            if not top_docs:
+                return {
+                    "answer": "해당 이력서에서 관련된 정보를 찾을 수 없습니다.",
+                    "chunks": [],
+                    "relevance_score": 0.0
+                }
+
+            # Document 객체 생성
+            from langchain_core.documents import Document
+            docs = [Document(page_content=vec.content, metadata=vec.meta_data or {})
+                   for vec, _ in top_docs]
 
             if not docs:
                 return {

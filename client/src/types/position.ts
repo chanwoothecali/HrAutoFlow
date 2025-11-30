@@ -16,3 +16,15 @@ export type Position = {
   status: PositionStatus;
   applicants: number;
 };
+
+// Position 폼 데이터 타입
+export type PositionFormData = {
+  title: string;
+  department: string;
+  techStack: string;
+  minYears: string;
+  projectExperience: string;
+  preferred: string;
+  headcount: string;
+  status: PositionStatus;
+};

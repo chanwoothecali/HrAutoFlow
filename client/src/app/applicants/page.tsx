@@ -14,6 +14,8 @@ type ApplicantListItem = {
   department: string;
   status: string;
   score: number;
+  resumeId?: number;
+  processingStatus?: string;
 };
 
 type NewApplicantForm = {
@@ -71,6 +73,33 @@ export default function ApplicantsPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  // 2) 이력서 처리 상태 폴링
+  useEffect(() => {
+    const pendingApplicants = applicants.filter(
+      (a) => a.resumeId && a.processingStatus === 'pending'
+    );
+
+    if (pendingApplicants.length === 0) return;
+
+    const interval = setInterval(() => {
+      pendingApplicants.forEach(async (applicant) => {
+        try {
+          const statusData = await apiClient.resumes.getProcessingStatus(applicant.resumeId!) as any;
+
+          // 처리가 완료되었으면 applicant 데이터 새로고침
+          if (statusData.processing_status === 'completed') {
+            const updatedApps = await apiClient.applicants.list() as ApplicantListItem[];
+            setApplicants(updatedApps);
+          }
+        } catch (error) {
+          console.error('상태 체크 실패:', error);
+        }
+      });
+    }, 3000); // 3초마다 체크
+
+    return () => clearInterval(interval);
+  }, [applicants]);
+
   // 검색 필터
   const filteredApplicants = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -117,13 +146,11 @@ export default function ApplicantsPage() {
 
     try {
       // FormData 생성
-      // 여기 수정해야함
       const formData = new FormData();
-    formData.append('file', newForm.resumeFile);      // file (필수)
-    formData.append('name', newForm.name);            // name (필수)
-    formData.append('email', newForm.email);          // email (선택)
-    const selectedPosition = positions.find(p => p.id === newForm.positionId);
-    formData.append('position', selectedPosition?.title || '');
+      formData.append('file', newForm.resumeFile);       // file (필수)
+      formData.append('name', newForm.name);             // name (필수)
+      formData.append('email', newForm.email);           // email (선택)
+      formData.append('position_id', newForm.positionId); // position_id (필수)
 
       // Next.js API Route 호출
       const newApplicant = await apiClient.applicants.create(formData);
@@ -225,6 +252,7 @@ export default function ApplicantsPage() {
                     const isInProgress = app.status === 'In Progress';
                     const isHired =
                       app.status === 'Hired' || app.status === '고용';
+                    const isProcessing = app.processingStatus === 'pending';
 
                     let statusColor = 'bg-slate-100 text-slate-600';
                     if (isNew) statusColor = 'bg-sky-50 text-sky-700';
@@ -244,11 +272,39 @@ export default function ApplicantsPage() {
                         <td className="px-3 py-2">
                           <div className="flex items-center gap-2">
                             <div className="flex h-6 w-6 flex-none items-center justify-center rounded-full bg-indigo-600 text-[10px] font-semibold text-white">
-                              {app.name.charAt(0)}
+                              {isProcessing ? (
+                                <svg
+                                  className="h-4 w-4 animate-spin text-white"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  ></circle>
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  ></path>
+                                </svg>
+                              ) : (
+                                app.name.charAt(0)
+                              )}
                             </div>
                             <div className="min-w-0">
                               <p className="truncate font-semibold text-slate-900">
                                 {app.name}
+                                {isProcessing && (
+                                  <span className="ml-1 text-[9px] text-indigo-600">
+                                    (분석중...)
+                                  </span>
+                                )}
                               </p>
                               <p className="truncate text-[10px] text-slate-500">
                                 {app.email}
@@ -272,9 +328,34 @@ export default function ApplicantsPage() {
                           </span>
                         </td>
                         <td className="px-3 py-2 text-right">
-                          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-50 text-[10px] font-semibold text-emerald-700">
-                            {app.score}
-                          </span>
+                          {isProcessing ? (
+                            <div className="inline-flex h-6 w-6 items-center justify-center">
+                              <svg
+                                className="h-4 w-4 animate-spin text-indigo-600"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                ></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                              </svg>
+                            </div>
+                          ) : (
+                            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-50 text-[10px] font-semibold text-emerald-700">
+                              {app.score}
+                            </span>
+                          )}
                         </td>
                       </tr>
                     );

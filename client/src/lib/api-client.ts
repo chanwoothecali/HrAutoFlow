@@ -23,6 +23,8 @@ async function fetchAPI<T>(
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+    console.log('>>> Error:', errorData.error || 'Unknown error', '<<');
+    console.log('>>> Response:', response);
     throw new Error(errorData.error || `API Error: ${response.status}`);
   }
 
@@ -92,7 +94,14 @@ export const apiClient = {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorText = await response.text();
+        console.log('>>> Error Response:', errorText);
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText };
+        }
         throw new Error(errorData.error || 'Failed to create applicant');
       }
 
@@ -120,6 +129,9 @@ export const apiClient = {
       const query = applicantId ? `?applicant_id=${applicantId}` : '';
       return fetchAPI(`/resumes${query}`);
     },
+
+    getProcessingStatus: (resumeId: number) =>
+      fetchAPI(`/upload/status/${resumeId}`),
   },
 
   // Ask (QA)

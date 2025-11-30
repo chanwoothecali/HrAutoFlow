@@ -1,0 +1,2598 @@
+@prefix : <http://www.semanticweb.org/yujun/ontologies/2025/10/ontology-project#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+@base <http://www.semanticweb.org/yujun/ontologies/2025/10/ontology-project> .
+
+<http://www.semanticweb.org/yujun/ontologies/2025/10/ontology-project> rdf:type owl:Ontology ;
+    rdfs:label "Football Transfer Market Ontology 2025"@en ;
+    rdfs:comment "축구 이적시장 온톨로지 - 2025년 기준"@ko .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  이적 관련 핵심 Object Properties
+
+:transferredFrom rdf:type owl:ObjectProperty ;
+    rdfs:domain :Transfer ;
+    rdfs:range :Club ;
+    rdfs:comment "이적 출발 클럽"@ko .
+
+:transferredTo rdf:type owl:ObjectProperty ;
+    rdfs:domain :Transfer ;
+    rdfs:range :Club ;
+    rdfs:comment "이적 도착 클럽"@ko .
+
+:involvesPlayer rdf:type owl:ObjectProperty ;
+    rdfs:domain :Transfer ;
+    rdfs:range :Player ;
+    rdfs:comment "이적에 관련된 선수"@ko .
+
+:involvesClub rdf:type owl:ObjectProperty ;
+    rdfs:domain :Transfer ;
+    rdfs:range :Club .
+
+:involvedIn rdf:type owl:ObjectProperty ;
+    rdfs:domain :Player ;
+    rdfs:range :Transfer ;
+    owl:inverseOf :involvesPlayer ;
+    rdfs:comment "선수가 참여한 이적"@ko .
+
+###  클럽 관련 Object Properties
+
+:belongsToLeague rdf:type owl:ObjectProperty ;
+    rdfs:domain :Club ;
+    rdfs:range :League ;
+    rdfs:comment "클럽 소속 리그"@ko .
+
+:locatedIn rdf:type owl:ObjectProperty ;
+    rdfs:domain :Club ;
+    rdfs:range :City ;
+    rdfs:comment "클럽 위치"@ko .
+
+:isRivalClub rdf:type owl:ObjectProperty ;
+    rdf:type owl:SymmetricProperty ;
+    rdfs:domain :Club ;
+    rdfs:range :Club ;
+    rdfs:comment "라이벌 클럽 관계"@ko .
+
+:hasCaptain rdf:type owl:ObjectProperty ;
+    rdfs:domain :Club ;
+    rdfs:range :Player ;
+    rdfs:comment "클럽의 주장"@ko .
+
+:hasManager rdf:type owl:ObjectProperty ;
+    rdfs:domain :Club ;
+    rdfs:range :Manager ;
+    rdfs:comment "클럽의 감독"@ko .
+
+###  선수 관련 Object Properties
+
+:playsFor rdf:type owl:ObjectProperty ;
+    rdfs:domain :Player ;
+    rdfs:range :Club ;
+    rdfs:comment "선수 소속 클럽"@ko .
+
+:playsAs rdf:type owl:ObjectProperty ;
+    rdfs:domain :Player ;
+    rdfs:range :Position ;
+    rdfs:comment "선수 포지션"@ko .
+
+:nationalityOf rdf:type owl:ObjectProperty ;
+    rdfs:domain :Player ;
+    rdfs:range :Country ;
+    rdfs:comment "선수 국적"@ko .
+
+:hasContract rdf:type owl:ObjectProperty ;
+    rdfs:domain :Player ;
+    rdfs:range :Contract .
+
+:representedBy rdf:type owl:ObjectProperty ;
+    rdfs:domain :Player ;
+    rdfs:range :Agent ;
+    rdfs:comment "선수 에이전트"@ko .
+
+###  계약 관련 Object Properties
+
+:hasClause rdf:type owl:ObjectProperty ;
+    rdfs:domain :Contract ;
+    rdfs:range :Clause ;
+    rdfs:comment "계약 조항"@ko .
+
+###  에이전트 관련 Object Properties
+
+:handledTransfer rdf:type owl:ObjectProperty ;
+    rdfs:domain :Agent ;
+    rdfs:range :Transfer ;
+    rdfs:comment "에이전트가 처리한 이적"@ko .
+
+###  감독 관련 Object Properties
+
+:worksFor rdf:type owl:ObjectProperty ;
+    rdfs:domain :Manager ;
+    rdfs:range :Club .
+
+:influencedTransfers rdf:type owl:ObjectProperty ;
+    rdfs:domain :Manager ;
+    rdfs:range :Transfer .
+
+###  이적 시즌/윈도우 관련
+
+:inSeason rdf:type owl:ObjectProperty ;
+    rdfs:domain :Transfer ;
+    rdfs:range :Season .
+
+:inWindow rdf:type owl:ObjectProperty ;
+    rdfs:domain :Transfer ;
+    rdfs:range :TransferWindow .
+
+###  리그 관련
+
+:hasTransfers rdf:type owl:ObjectProperty ;
+    rdfs:domain :League ;
+    rdfs:range :Transfer .
+
+#################################################################
+#    Data Properties
+#################################################################
+
+###  이적 관련 Data Properties
+
+:hasFee rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Transfer ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "이적료 (EUR)"@ko .
+
+:signingDate rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Transfer ;
+    rdfs:range xsd:dateTime ;
+    rdfs:comment "이적 계약 날짜"@ko .
+
+:isLoan rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Transfer ;
+    rdfs:range xsd:boolean ;
+    rdfs:comment "임대 여부"@ko .
+
+:hasOptionToBuy rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Transfer ;
+    rdfs:range xsd:boolean ;
+    rdfs:comment "임대 후 매수 옵션"@ko .
+
+:isFreeTransfer rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Transfer ;
+    rdfs:range xsd:boolean ;
+    rdfs:comment "자유이적 여부"@ko .
+
+:loanFee rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Transfer ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "임대료"@ko .
+
+:buyoutClauseAmount rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Transfer ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "바이아웃 조항 금액"@ko .
+
+###  선수 관련 Data Properties
+
+:playerAge rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Player ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "선수 나이"@ko .
+
+:playerName rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Player ;
+    rdfs:range xsd:string .
+
+:marketValue rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Player ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "선수 시장가치"@ko .
+
+:goalsScored rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Player ;
+    rdfs:range xsd:integer .
+
+:hasAssists rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Player ;
+    rdfs:range xsd:integer .
+
+:shirtNumber rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Player ;
+    rdfs:range xsd:integer .
+
+###  계약 관련 Data Properties
+
+:contractDuration rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Contract ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "계약 기간 (년)"@ko .
+
+:salary rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Contract ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "연봉"@ko .
+
+:contractStartDate rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Contract ;
+    rdfs:range xsd:date .
+
+:contractEndDate rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Contract ;
+    rdfs:range xsd:date .
+
+###  클럽 관련 Data Properties
+
+:clubName rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Club ;
+    rdfs:range xsd:string .
+
+:foundedYear rdf:type owl:DatatypeProperty ;
+    rdfs:domain :Club ;
+    rdfs:range xsd:integer .
+
+###  리그 관련 Data Properties
+
+:leagueName rdf:type owl:DatatypeProperty ;
+    rdfs:domain :League ;
+    rdfs:range xsd:string .
+
+:isTop5League rdf:type owl:DatatypeProperty ;
+    rdfs:domain :League ;
+    rdfs:range xsd:boolean .
+
+#################################################################
+#    Classes
+#################################################################
+
+###  핵심 클래스
+
+:Person rdf:type owl:Class .
+
+:Organization rdf:type owl:Class .
+
+:Event rdf:type owl:Class .
+
+:Place rdf:type owl:Class .
+
+###  Person 하위 클래스
+
+:Player rdf:type owl:Class ;
+    rdfs:subClassOf :Person ;
+    rdfs:comment "축구 선수"@ko .
+
+:Manager rdf:type owl:Class ;
+    rdfs:subClassOf :Person ;
+    rdfs:comment "감독"@ko .
+
+:Agent rdf:type owl:Class ;
+    rdfs:subClassOf :Person ;
+    rdfs:comment "에이전트"@ko .
+
+###  Organization 하위 클래스
+
+:Club rdf:type owl:Class ;
+    rdfs:subClassOf :Organization ;
+    rdfs:comment "축구 클럽"@ko .
+
+:League rdf:type owl:Class ;
+    rdfs:subClassOf :Organization ;
+    rdfs:comment "축구 리그"@ko .
+
+###  Event 하위 클래스
+
+:Transfer rdf:type owl:Class ;
+    rdfs:subClassOf :Event ;
+    rdfs:comment "이적 이벤트"@ko .
+
+:PermanentTransfer rdf:type owl:Class ;
+    rdfs:subClassOf :Transfer ;
+    rdfs:comment "완전 이적"@ko .
+
+:LoanTransfer rdf:type owl:Class ;
+    rdfs:subClassOf :Transfer ;
+    rdfs:comment "임대 이적"@ko .
+
+:Contract rdf:type owl:Class ;
+    rdfs:subClassOf :Event ;
+    rdfs:comment "계약"@ko .
+
+###  Place 하위 클래스
+
+:Country rdf:type owl:Class ;
+    rdfs:subClassOf :Place .
+
+:City rdf:type owl:Class ;
+    rdfs:subClassOf :Place .
+
+###  기타 클래스
+
+:Position rdf:type owl:Class ;
+    rdfs:comment "선수 포지션"@ko .
+
+:Clause rdf:type owl:Class ;
+    rdfs:comment "계약 조항"@ko .
+
+:Season rdf:type owl:Class ;
+    rdfs:comment "시즌"@ko .
+
+:TransferWindow rdf:type owl:Class ;
+    rdfs:comment "이적 시장 기간"@ko .
+
+#################################################################
+#    Individuals - Positions
+#################################################################
+
+:GoalkeeperPosition rdf:type owl:NamedIndividual , :Position ;
+    rdfs:label "Goalkeeper"@en , "골키퍼"@ko .
+
+:DefenderPosition rdf:type owl:NamedIndividual , :Position ;
+    rdfs:label "Defender"@en , "수비수"@ko .
+
+:MidfielderPosition rdf:type owl:NamedIndividual , :Position ;
+    rdfs:label "Midfielder"@en , "미드필더"@ko .
+
+:ForwardPosition rdf:type owl:NamedIndividual , :Position ;
+    rdfs:label "Forward"@en , "공격수"@ko .
+
+:LeftBackPosition rdf:type owl:NamedIndividual , :Position ;
+    rdfs:label "Left Back"@en , "좌측백"@ko .
+
+:RightBackPosition rdf:type owl:NamedIndividual , :Position ;
+    rdfs:label "Right Back"@en , "우측백"@ko .
+
+:CenterBackPosition rdf:type owl:NamedIndividual , :Position ;
+    rdfs:label "Center Back"@en , "센터백"@ko .
+
+:DefensiveMidfielderPosition rdf:type owl:NamedIndividual , :Position ;
+    rdfs:label "Defensive Midfielder"@en , "수비형 미드필더"@ko .
+
+:AttackingMidfielderPosition rdf:type owl:NamedIndividual , :Position ;
+    rdfs:label "Attacking Midfielder"@en , "공격형 미드필더"@ko .
+
+:WingerPosition rdf:type owl:NamedIndividual , :Position ;
+    rdfs:label "Winger"@en , "윙어"@ko .
+
+:StrikerPosition rdf:type owl:NamedIndividual , :Position ;
+    rdfs:label "Striker"@en , "스트라이커"@ko .
+
+#################################################################
+#    Individuals - Leagues
+#################################################################
+
+:PremierLeague rdf:type owl:NamedIndividual , :League ;
+    :leagueName "Premier League" ;
+    :isTop5League true ;
+    rdfs:label "프리미어리그"@ko .
+
+:LaLiga rdf:type owl:NamedIndividual , :League ;
+    :leagueName "La Liga" ;
+    :isTop5League true ;
+    rdfs:label "라리가"@ko .
+
+:Bundesliga rdf:type owl:NamedIndividual , :League ;
+    :leagueName "Bundesliga" ;
+    :isTop5League true ;
+    rdfs:label "분데스리가"@ko .
+
+:SerieA rdf:type owl:NamedIndividual , :League ;
+    :leagueName "Serie A" ;
+    :isTop5League true ;
+    rdfs:label "세리에A"@ko .
+
+:Ligue1 rdf:type owl:NamedIndividual , :League ;
+    :leagueName "Ligue 1" ;
+    :isTop5League true ;
+    rdfs:label "리그1"@ko .
+
+:Eredivisie rdf:type owl:NamedIndividual , :League ;
+    :leagueName "Eredivisie" ;
+    :isTop5League false .
+
+:SaudiProLeague rdf:type owl:NamedIndividual , :League ;
+    :leagueName "Saudi Pro League" ;
+    :isTop5League false .
+
+:Championship rdf:type owl:NamedIndividual , :League ;
+    :leagueName "EFL Championship" ;
+    :isTop5League false .
+
+:ScottishPremiership rdf:type owl:NamedIndividual , :League ;
+    :leagueName "Scottish Premiership" ;
+    :isTop5League false .
+
+:SuperLig rdf:type owl:NamedIndividual , :League ;
+    :leagueName "Turkish Super Lig" ;
+    :isTop5League false .
+
+:GreekSuperLeague rdf:type owl:NamedIndividual , :League ;
+    :leagueName "Greek Super League" ;
+    :isTop5League false .
+
+:SerbianSuperLiga rdf:type owl:NamedIndividual , :League ;
+    :leagueName "Serbian Super Liga" ;
+    :isTop5League false .
+
+#################################################################
+#    Individuals - Countries
+#################################################################
+
+:England rdf:type owl:NamedIndividual , :Country ; rdfs:label "England" .
+:Spain rdf:type owl:NamedIndividual , :Country ; rdfs:label "Spain" .
+:Germany rdf:type owl:NamedIndividual , :Country ; rdfs:label "Germany" .
+:Italy rdf:type owl:NamedIndividual , :Country ; rdfs:label "Italy" .
+:France rdf:type owl:NamedIndividual , :Country ; rdfs:label "France" .
+:Netherlands rdf:type owl:NamedIndividual , :Country ; rdfs:label "Netherlands" .
+:Portugal rdf:type owl:NamedIndividual , :Country ; rdfs:label "Portugal" .
+:Belgium rdf:type owl:NamedIndividual , :Country ; rdfs:label "Belgium" .
+:Brazil rdf:type owl:NamedIndividual , :Country ; rdfs:label "Brazil" .
+:Argentina rdf:type owl:NamedIndividual , :Country ; rdfs:label "Argentina" .
+:Sweden rdf:type owl:NamedIndividual , :Country ; rdfs:label "Sweden" .
+:Ukraine rdf:type owl:NamedIndividual , :Country ; rdfs:label "Ukraine" .
+:Serbia rdf:type owl:NamedIndividual , :Country ; rdfs:label "Serbia" .
+:Switzerland rdf:type owl:NamedIndividual , :Country ; rdfs:label "Switzerland" .
+:Scotland rdf:type owl:NamedIndividual , :Country ; rdfs:label "Scotland" .
+:Wales rdf:type owl:NamedIndividual , :Country ; rdfs:label "Wales" .
+:Turkey rdf:type owl:NamedIndividual , :Country ; rdfs:label "Turkey" .
+:Greece rdf:type owl:NamedIndividual , :Country ; rdfs:label "Greece" .
+:SaudiArabia rdf:type owl:NamedIndividual , :Country ; rdfs:label "Saudi Arabia" .
+:Monaco rdf:type owl:NamedIndividual , :Country ; rdfs:label "Monaco" .
+:Senegal rdf:type owl:NamedIndividual , :Country ; rdfs:label "Senegal" .
+:Uruguay rdf:type owl:NamedIndividual , :Country ; rdfs:label "Uruguay" .
+:Colombia rdf:type owl:NamedIndividual , :Country ; rdfs:label "Colombia" .
+:Guinea rdf:type owl:NamedIndividual , :Country ; rdfs:label "Guinea" .
+
+#################################################################
+#    Individuals - Cities
+#################################################################
+
+:London rdf:type owl:NamedIndividual , :City ; rdfs:label "London" .
+:Manchester rdf:type owl:NamedIndividual , :City ; rdfs:label "Manchester" .
+:Liverpool rdf:type owl:NamedIndividual , :City ; rdfs:label "Liverpool" .
+:Newcastle rdf:type owl:NamedIndividual , :City ; rdfs:label "Newcastle" .
+:Birmingham rdf:type owl:NamedIndividual , :City ; rdfs:label "Birmingham" .
+:Madrid rdf:type owl:NamedIndividual , :City ; rdfs:label "Madrid" .
+:Barcelona rdf:type owl:NamedIndividual , :City ; rdfs:label "Barcelona" .
+:Munich rdf:type owl:NamedIndividual , :City ; rdfs:label "Munich" .
+:Dortmund rdf:type owl:NamedIndividual , :City ; rdfs:label "Dortmund" .
+:Milan rdf:type owl:NamedIndividual , :City ; rdfs:label "Milan" .
+:Turin rdf:type owl:NamedIndividual , :City ; rdfs:label "Turin" .
+:Rome rdf:type owl:NamedIndividual , :City ; rdfs:label "Rome" .
+:Paris rdf:type owl:NamedIndividual , :City ; rdfs:label "Paris" .
+:Amsterdam rdf:type owl:NamedIndividual , :City ; rdfs:label "Amsterdam" .
+:Istanbul rdf:type owl:NamedIndividual , :City ; rdfs:label "Istanbul" .
+:Riyadh rdf:type owl:NamedIndividual , :City ; rdfs:label "Riyadh" .
+:Glasgow rdf:type owl:NamedIndividual , :City ; rdfs:label "Glasgow" .
+:Leeds rdf:type owl:NamedIndividual , :City ; rdfs:label "Leeds" .
+
+#################################################################
+#    Individuals - Clubs (유럽 축구 클럽)
+#################################################################
+
+:ACMilan rdf:type owl:NamedIndividual , :Club ;
+    :clubName "ACMilan" ;
+    :belongsToLeague :SerieA ;
+    :locatedIn :Milan ;
+    :hasManager :PauloFonseca .
+
+:AFC_Ajax rdf:type owl:NamedIndividual , :Club ;
+    :clubName "AFC Ajax" .
+
+:AJAuxerre rdf:type owl:NamedIndividual , :Club ;
+    :clubName "AJAuxerre" .
+
+:Aberdeen rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Aberdeen" ;
+    :belongsToLeague :ScottishPremiership ;
+    :locatedIn :Aberdeen .
+
+:Ajax rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Ajax" ;
+    :belongsToLeague :Eredivisie ;
+    :locatedIn :Amsterdam .
+
+:AlHilal rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Al Hilal" ;
+    :belongsToLeague :SaudiProLeague ;
+    :locatedIn :Riyadh .
+
+:Arsenal rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Arsenal" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :London ;
+    :hasManager :MikelArteta .
+
+:AustriaKlagenfurt rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Austria Klagenfurt" .
+
+:Barcelona rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Barcelona" ;
+    :belongsToLeague :LaLiga ;
+    :locatedIn :Barcelona ;
+    :hasManager :HansiFlick .
+
+:Basel rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Basel" .
+
+:BayerLeverkusen rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Bayer Leverkusen" ;
+    :belongsToLeague :Bundesliga ;
+    :locatedIn :Leverkusen .
+
+:BayernMunich rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Bayern Munich" ;
+    :belongsToLeague :Bundesliga ;
+    :locatedIn :Munich ;
+    :hasManager :VincentKompany .
+
+:Benfica rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Benfica" .
+
+:Besiktas rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Besiktas" .
+
+:Birmingham_City rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Birmingham City" .
+
+:BlackburnRovers rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Blackburn Rovers" ;
+    :belongsToLeague :Championship ;
+    :locatedIn :Blackburn .
+
+:Blackpool rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Blackpool" .
+
+:BocaJuniors rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Boca Juniors" .
+
+:BorussiaDortmund rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Borussia Dortmund" ;
+    :belongsToLeague :Bundesliga ;
+    :locatedIn :Dortmund ;
+    :hasManager :NuriSahin .
+
+:Botafogo rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Botafogo" .
+
+:Bournemouth rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Bournemouth" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :Bournemouth .
+
+:Brentford rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Brentford" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :London .
+
+:Burnley rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Burnley" ;
+    :belongsToLeague :Championship ;
+    :locatedIn :Burnley .
+
+:CapeVerde rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Cape Verde" .
+
+:CardiffCity rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Cardiff City" ;
+    :belongsToLeague :Championship ;
+    :locatedIn :Cardiff .
+
+:CharltonAthletic rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Charlton Athletic" .
+
+:Chelsea rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Chelsea" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :London ;
+    :hasManager :EnzoMaresca .
+
+:CrystalPalace rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Crystal Palace" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :London .
+
+:DerbyCounty rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Derby County" .
+
+:Egypt rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Egypt" .
+
+:EintrachtFrankfurt rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Eintracht Frankfurt" ;
+    :belongsToLeague :Bundesliga ;
+    :locatedIn :Frankfurt .
+
+:EstudiantesDeLaPlata rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Estudiantes De La Plata" .
+
+:Eswatini rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Eswatini" .
+
+:Everton rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Everton" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :Liverpool .
+
+:ExeterCity rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Exeter City" .
+
+:FCNuremberg rdf:type owl:NamedIndividual , :Club ;
+    :clubName "FCNuremberg" .
+
+:FC_Nordsjaelland rdf:type owl:NamedIndividual , :Club ;
+    :clubName "FC Nordsjaelland" .
+
+:Frankfurt rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Frankfurt" .
+
+:Fulham rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Fulham" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :London .
+
+:Galatasaray rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Galatasaray" ;
+    :belongsToLeague :SuperLig ;
+    :locatedIn :Istanbul .
+
+:Getafe rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Getafe" .
+
+:Hoffenheim rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Hoffenheim" ;
+    :belongsToLeague :Bundesliga ;
+    :locatedIn :Sinsheim .
+
+:Inter rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Inter" .
+
+:InterMilan rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Inter Milan" ;
+    :belongsToLeague :SerieA ;
+    :locatedIn :Milan ;
+    :hasManager :SimoneInzaghi .
+
+:IpswichTown rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Ipswich Town" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :Ipswich .
+
+:Ipswich_Town rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Ipswich Town" .
+
+:Juventus rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Juventus" ;
+    :belongsToLeague :SerieA ;
+    :locatedIn :Turin ;
+    :hasManager :ThiagoMotta .
+
+:LeedsUnited rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Leeds United" ;
+    :belongsToLeague :Championship ;
+    :locatedIn :Leeds .
+
+:Leeds_United rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Leeds United" .
+
+:LeicesterCity rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Leicester City" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :Leicester .
+
+:Leicester_City rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Leicester City" .
+
+:LeytonOrient rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Leyton Orient" .
+
+:LeytonOrient2 rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Leyton Orient2" .
+
+:Libya rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Libya" .
+
+:Liverpool rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Liverpool" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :Liverpool ;
+    :hasManager :ArneSlot .
+
+:Luton rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Luton" .
+
+:LutonTown rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Luton Town" .
+
+:MKDons rdf:type owl:NamedIndividual , :Club ;
+    :clubName "MKDons" .
+
+:ManchesterCity rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Manchester City" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :Manchester ;
+    :hasManager :PepGuardiola .
+
+:ManchesterUnited rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Manchester United" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :Manchester ;
+    :hasManager :RubenAmorim .
+
+:Miami_Game_Location rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Miami Game Location" .
+
+:Middlesbrough rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Middlesbrough" ;
+    :belongsToLeague :Championship ;
+    :locatedIn :Middlesbrough .
+
+:Millwall rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Millwall" .
+
+:Motherwell rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Motherwell" ;
+    :belongsToLeague :ScottishPremiership ;
+    :locatedIn :Motherwell .
+
+:Napoli rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Napoli" ;
+    :belongsToLeague :SerieA ;
+    :locatedIn :Naples ;
+    :hasManager :AntonioContev .
+
+:NewcastleUnited rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Newcastle United" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :Newcastle ;
+    :hasManager :EddieHowe .
+
+:NewportCounty rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Newport County" .
+
+:NottinghamForest rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Nottingham Forest" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :Nottingham .
+
+:NottsCounty rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Notts County" .
+
+:Olympiacos rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Olympiacos" ;
+    :belongsToLeague :GreekSuperLeague ;
+    :locatedIn :Piraeus .
+
+:OlympiqueLyon rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Olympique Lyon" ;
+    :belongsToLeague :Ligue1 ;
+    :locatedIn :Lyon .
+
+:OrlandoCity rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Orlando City" .
+
+:OxfordUnited rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Oxford United" .
+
+:ParisSaintGermain rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Paris Saint Germain" ;
+    :belongsToLeague :Ligue1 ;
+    :locatedIn :Paris ;
+    :hasManager :LuisEnrique .
+
+:Paris_St rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Paris St" .
+
+:QPR rdf:type owl:NamedIndividual , :Club ;
+    :clubName "QPR" .
+
+:RBLeipzig rdf:type owl:NamedIndividual , :Club ;
+    :clubName "RBLeipzig" ;
+    :belongsToLeague :Bundesliga ;
+    :locatedIn :Leipzig .
+
+:Rangers rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Rangers" ;
+    :belongsToLeague :ScottishPremiership ;
+    :locatedIn :Glasgow .
+
+:Reading rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Reading" .
+
+:RealMadrid rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Real Madrid" ;
+    :belongsToLeague :LaLiga ;
+    :locatedIn :Madrid ;
+    :hasManager :CarloAncelotti .
+
+:RealSociedad rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Real Sociedad" ;
+    :belongsToLeague :LaLiga ;
+    :locatedIn :SanSebastian .
+
+:RedStarBelgrade rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Red Star Belgrade" ;
+    :belongsToLeague :SerbianSuperLiga ;
+    :locatedIn :Belgrade .
+
+:Rennes rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Rennes" .
+
+:RiverPlate rdf:type owl:NamedIndividual , :Club ;
+    :clubName "River Plate" .
+
+:Roma rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Roma" ;
+    :belongsToLeague :SerieA ;
+    :locatedIn :Rome .
+
+:RosarioCentral rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Rosario Central" .
+
+:SheffieldUnited rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Sheffield United" ;
+    :belongsToLeague :Championship ;
+    :locatedIn :Sheffield .
+
+:SligoRovers rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Sligo Rovers" .
+
+:SlovanBratislava rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Slovan Bratislava" .
+
+:Southampton rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Southampton" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :Southampton .
+
+:Strasbourg rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Strasbourg" ;
+    :belongsToLeague :Ligue1 ;
+    :locatedIn :Strasbourg .
+
+:Stuttgart rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Stuttgart" ;
+    :belongsToLeague :Bundesliga ;
+    :locatedIn :Stuttgart .
+
+:Sunderland rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Sunderland" ;
+    :belongsToLeague :Championship ;
+    :locatedIn :Sunderland .
+
+:Swansea rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Swansea" .
+
+:SwanseaCity rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Swansea City" ;
+    :belongsToLeague :Championship ;
+    :locatedIn :Swansea .
+
+:TottenhamHotspur rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Tottenham Hotspur" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :London ;
+    :hasManager :AngePostecoglou .
+
+:Toulouse rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Toulouse" .
+
+:Udinese rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Udinese" ;
+    :belongsToLeague :SerieA ;
+    :locatedIn :Udine .
+
+:Villarreal rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Villarreal" ;
+    :belongsToLeague :LaLiga ;
+    :locatedIn :Villarreal .
+
+:WestBrom rdf:type owl:NamedIndividual , :Club ;
+    :clubName "West Brom" .
+
+:WestHamUnited rdf:type owl:NamedIndividual , :Club ;
+    :clubName "West Ham United" ;
+    :belongsToLeague :PremierLeague ;
+    :locatedIn :London .
+
+:Wrexham rdf:type owl:NamedIndividual , :Club ;
+    :clubName "Wrexham" ;
+    :belongsToLeague :Championship ;
+    :locatedIn :Wrexham .
+
+# 라이벌 관계
+:Liverpool :isRivalClub :Everton .
+:ManchesterCity :isRivalClub :ManchesterUnited .
+:Arsenal :isRivalClub :TottenhamHotspur .
+:RealMadrid :isRivalClub :Barcelona .
+:ACMilan :isRivalClub :InterMilan .
+:Rangers :isRivalClub :Celtic .
+:BorussiaDortmund :isRivalClub :BayernMunich .
+
+#################################################################
+#    Individuals - Players (선수)
+#################################################################
+
+:AlanBrowne rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Alan Browne" ;
+    :playsAs :MidfielderPosition .
+
+:AlexJimenez rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Alex Jimenez" ;
+    :playsAs :MidfielderPosition .
+
+:Alex_Oxlade_Chamberlain rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Alex Oxlade Chamberlain" ;
+    :playsAs :MidfielderPosition .
+
+:AlexanderIsak rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Alexander Isak" ;
+    :playsAs :ForwardPosition ;
+    :nationalityOf :Sweden ;
+    :playerAge 25 ;
+    :marketValue "110000000"^^xsd:decimal ;
+    :representedBy :UniqueAgency .
+
+:AntonStach rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Anton Stach" ;
+    :playsAs :MidfielderPosition .
+
+:ArnaudKalimuendo rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Arnaud Kalimuendo" ;
+    :playsAs :MidfielderPosition .
+
+:Barcelona rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Barcelona" ;
+    :playsAs :MidfielderPosition .
+
+:Benjamin_Sesko rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Benjamin Sesko" ;
+    :playsAs :MidfielderPosition .
+
+:Borna_Sosa rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Borna Sosa" ;
+    :playsAs :MidfielderPosition .
+
+:BrennanJohnson rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Brennan Johnson" ;
+    :playsAs :MidfielderPosition .
+
+:CallumHendry rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Callum Hendry" ;
+    :playsAs :MidfielderPosition .
+
+:CapeVerde rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Cape Verde" ;
+    :playsAs :MidfielderPosition .
+
+:CarltonMorris rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Carlton Morris" ;
+    :playsAs :MidfielderPosition .
+
+:CarneyChukwuemeka rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Carney Chukwuemeka" ;
+    :playsAs :MidfielderPosition ;
+    :nationalityOf :England ;
+    :playerAge 21 ;
+    :marketValue "25000000"^^xsd:decimal ;
+    :representedBy :KiaJoorabchian .
+
+:CasparJander rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Caspar Jander" ;
+    :playsAs :MidfielderPosition .
+
+:ChristantusUche rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Christantus Uche" ;
+    :playsAs :MidfielderPosition .
+
+:ChristianNorgaard rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Christian Norgaard" ;
+    :playsAs :MidfielderPosition .
+
+:ChristianPulisic rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Christian Pulisic" ;
+    :playsAs :WingerPosition ;
+    :nationalityOf :USA ;
+    :playerAge 26 ;
+    :marketValue "40000000"^^xsd:decimal .
+
+:DannyIngs rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Danny Ings" ;
+    :playsAs :ForwardPosition ;
+    :nationalityOf :England ;
+    :playerAge 32 ;
+    :marketValue "5000000"^^xsd:decimal .
+
+:DarwinNunez rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Darwin Nunez" ;
+    :playsAs :ForwardPosition ;
+    :nationalityOf :Uruguay ;
+    :playerAge 25 ;
+    :marketValue "70000000"^^xsd:decimal ;
+    :representedBy :JorgeMendes .
+
+:DavidStrelec rdf:type owl:NamedIndividual , :Player ;
+    :playerName "David Strelec" ;
+    :playsAs :MidfielderPosition .
+
+:DeclanRice rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Declan Rice" ;
+    :playsAs :MidfielderPosition ;
+    :nationalityOf :England ;
+    :playerAge 26 ;
+    :marketValue "120000000"^^xsd:decimal .
+
+:DilaneBakwa rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Dilane Bakwa" ;
+    :playsAs :WingerPosition ;
+    :nationalityOf :France ;
+    :playerAge 22 ;
+    :marketValue "20000000"^^xsd:decimal .
+
+:DjordjePetrovic rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Djordje Petrovic" ;
+    :playsAs :GoalkeeperPosition ;
+    :nationalityOf :Serbia ;
+    :playerAge 25 ;
+    :marketValue "20000000"^^xsd:decimal ;
+    :representedBy :FaliRamadani .
+
+:DouglasLuiz rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Douglas Luiz" ;
+    :playsAs :MidfielderPosition ;
+    :nationalityOf :Brazil ;
+    :playerAge 26 ;
+    :marketValue "55000000"^^xsd:decimal ;
+    :representedBy :KiaJoorabchian .
+
+:DuncanMcGuire rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Duncan Mc Guire" ;
+    :playsAs :MidfielderPosition .
+
+:EberechiEze rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Eberechi Eze" ;
+    :playsAs :MidfielderPosition ;
+    :nationalityOf :England ;
+    :playerAge 26 ;
+    :marketValue "65000000"^^xsd:decimal ;
+    :representedBy :DavidManasseh .
+
+:EthanBrierley rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Ethan Brierley" ;
+    :playsAs :MidfielderPosition .
+
+:FinnAzaz rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Finn Azaz" ;
+    :playsAs :MidfielderPosition .
+
+:FlorianWirtz rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Florian Wirtz" ;
+    :playsAs :MidfielderPosition .
+
+:FrancoMastantuono rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Franco Mastantuono" ;
+    :playsAs :MidfielderPosition .
+
+:GabrielOsho rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Gabriel Osho" ;
+    :playsAs :MidfielderPosition .
+
+:GianluigiDonnarumma rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Gianluigi Donnarumma" ;
+    :playsAs :GoalkeeperPosition ;
+    :nationalityOf :Italy ;
+    :playerAge 26 ;
+    :marketValue "40000000"^^xsd:decimal ;
+    :representedBy :JorgeMendes .
+
+:GranitXhaka rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Granit Xhaka" ;
+    :playsAs :MidfielderPosition .
+
+:HugoEkitike rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Hugo Ekitike" ;
+    :playsAs :ForwardPosition ;
+    :nationalityOf :France ;
+    :playerAge 22 ;
+    :marketValue "45000000"^^xsd:decimal .
+
+:IdrisElMizouni rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Idris El Mizouni" ;
+    :playsAs :MidfielderPosition .
+
+:IgorJesus rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Igor Jesus" ;
+    :playsAs :MidfielderPosition .
+
+:IlkayGundogan rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Ilkay Gundogan" ;
+    :playsAs :MidfielderPosition ;
+    :nationalityOf :Germany ;
+    :playerAge 34 ;
+    :marketValue "15000000"^^xsd:decimal ;
+    :representedBy :VolkerStruth .
+
+:IlliaZabarnyi rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Illia Zabarnyi" ;
+    :playsAs :DefenderPosition ;
+    :nationalityOf :Ukraine ;
+    :playerAge 22 ;
+    :marketValue "45000000"^^xsd:decimal ;
+    :representedBy :PiniZahavi .
+
+:JakeDoyleHayes rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Jake Doyle Hayes" ;
+    :playsAs :MidfielderPosition .
+
+:JamesMcAtee rdf:type owl:NamedIndividual , :Player ;
+    :playerName "James Mc Atee" ;
+    :playsAs :MidfielderPosition ;
+    :nationalityOf :England ;
+    :playerAge 22 ;
+    :marketValue "25000000"^^xsd:decimal .
+
+:JamesTrafford rdf:type owl:NamedIndividual , :Player ;
+    :playerName "James Trafford" ;
+    :playsAs :GoalkeeperPosition ;
+    :nationalityOf :England ;
+    :playerAge 22 ;
+    :marketValue "25000000"^^xsd:decimal ;
+    :representedBy :JorgeMendes .
+
+:James_Justin rdf:type owl:NamedIndividual , :Player ;
+    :playerName "James Justin" ;
+    :playsAs :MidfielderPosition .
+
+:JamieGittens rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Jamie Gittens" ;
+    :playsAs :WingerPosition ;
+    :nationalityOf :England ;
+    :playerAge 20 ;
+    :marketValue "50000000"^^xsd:decimal ;
+    :representedBy :VolkerStruth .
+
+:JarrellQuansah rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Jarrell Quansah" ;
+    :playsAs :MidfielderPosition .
+
+:JaydeeCanvot rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Jaydee Canvot" ;
+    :playsAs :MidfielderPosition .
+
+:JaydenLuker rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Jayden Luker" ;
+    :playsAs :MidfielderPosition .
+
+:JaydenWareham rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Jayden Wareham" ;
+    :playsAs :MidfielderPosition .
+
+:JoaoPalhinha rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Joao Palhinha" ;
+    :playsAs :MidfielderPosition ;
+    :nationalityOf :Portugal ;
+    :playerAge 29 ;
+    :marketValue "50000000"^^xsd:decimal .
+
+:JonMcLaughlin rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Jon Mc Laughlin" ;
+    :playsAs :MidfielderPosition .
+
+:JonathanDavid rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Jonathan David" ;
+    :playsAs :MidfielderPosition .
+
+:JorrelHato rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Jorrel Hato" ;
+    :playsAs :DefenderPosition ;
+    :nationalityOf :Netherlands ;
+    :playerAge 18 ;
+    :marketValue "45000000"^^xsd:decimal ;
+    :representedBy :MinoRaiola_Successors .
+
+:Jose_Mourinho rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Jose Mourinho" ;
+    :playsAs :MidfielderPosition .
+
+:KeananBennetts rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Keanan Bennetts" ;
+    :playsAs :MidfielderPosition .
+
+:KepaArrizabalaga rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Kepa Arrizabalaga" ;
+    :playsAs :MidfielderPosition .
+
+:KevinDeBruyne rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Kevin De Bruyne" ;
+    :playsAs :MidfielderPosition ;
+    :nationalityOf :Belgium ;
+    :playerAge 33 ;
+    :marketValue "45000000"^^xsd:decimal ;
+    :representedBy :PiniZahavi .
+
+:KostasTsimikas rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Kostas Tsimikas" ;
+    :playsAs :DefenderPosition ;
+    :nationalityOf :Greece ;
+    :playerAge 28 ;
+    :marketValue "20000000"^^xsd:decimal .
+
+:Kyle_Walker_Peters rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Kyle Walker Peters" ;
+    :playsAs :MidfielderPosition .
+
+:LennonMiller rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Lennon Miller" ;
+    :playsAs :MidfielderPosition ;
+    :nationalityOf :Scotland ;
+    :playerAge 18 ;
+    :marketValue "8000000"^^xsd:decimal .
+
+:LewisOBrien rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Lewis OBrien" ;
+    :playsAs :MidfielderPosition .
+
+:LuisDiaz rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Luis Diaz" ;
+    :playsAs :WingerPosition ;
+    :nationalityOf :Colombia ;
+    :playerAge 28 ;
+    :marketValue "65000000"^^xsd:decimal .
+
+:MalickThiaw rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Malick Thiaw" ;
+    :playsAs :DefenderPosition ;
+    :nationalityOf :Germany ;
+    :playerAge 23 ;
+    :marketValue "35000000"^^xsd:decimal ;
+    :representedBy :VolkerStruth .
+
+:ManuelAkanji rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Manuel Akanji" ;
+    :playsAs :MidfielderPosition .
+
+:ManuelBenson rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Manuel Benson" ;
+    :playsAs :MidfielderPosition .
+
+:MarcGuehi rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Marc Guehi" ;
+    :playsAs :DefenderPosition ;
+    :nationalityOf :England ;
+    :playerAge 24 ;
+    :marketValue "55000000"^^xsd:decimal ;
+    :representedBy :DavidManasseh .
+
+:MarcusRashford rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Marcus Rashford" ;
+    :playsAs :ForwardPosition ;
+    :nationalityOf :England ;
+    :playerAge 27 ;
+    :marketValue "55000000"^^xsd:decimal .
+
+:MarkoLazetic rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Marko Lazetic" ;
+    :playsAs :ForwardPosition ;
+    :nationalityOf :Serbia ;
+    :playerAge 19 ;
+    :marketValue "5000000"^^xsd:decimal .
+
+:MartinZubimendi rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Martin Zubimendi" ;
+    :playsAs :MidfielderPosition ;
+    :nationalityOf :Spain ;
+    :playerAge 25 ;
+    :marketValue "60000000"^^xsd:decimal .
+
+:Martin_Odegaard rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Martin Odegaard" ;
+    :playsAs :MidfielderPosition .
+
+:MassimoLuongo rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Massimo Luongo" ;
+    :playsAs :MidfielderPosition .
+
+:MateusFernandes rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Mateus Fernandes" ;
+    :playsAs :MidfielderPosition ;
+    :nationalityOf :Portugal ;
+    :playerAge 20 ;
+    :marketValue "30000000"^^xsd:decimal .
+
+:MichaelCraig rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Michael Craig" ;
+    :playsAs :MidfielderPosition .
+
+:MiguelRusso rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Miguel Russo" ;
+    :playsAs :MidfielderPosition .
+
+:MikeyMoore rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Mikey Moore" ;
+    :playsAs :ForwardPosition ;
+    :nationalityOf :England ;
+    :playerAge 17 ;
+    :marketValue "15000000"^^xsd:decimal .
+
+:NathanOpoku rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Nathan Opoku" ;
+    :playsAs :MidfielderPosition .
+
+:Nathan_Broadhead rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Nathan Broadhead" ;
+    :playsAs :MidfielderPosition .
+
+:NickWoltemade rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Nick Woltemade" ;
+    :playsAs :MidfielderPosition .
+
+:NicolasJackson rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Nicolas Jackson" ;
+    :playsAs :ForwardPosition ;
+    :nationalityOf :Senegal ;
+    :playerAge 24 ;
+    :marketValue "55000000"^^xsd:decimal ;
+    :representedBy :FaliRamadani .
+
+:NoahOkafor rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Noah Okafor" ;
+    :playsAs :ForwardPosition ;
+    :nationalityOf :Switzerland ;
+    :playerAge 24 ;
+    :marketValue "25000000"^^xsd:decimal .
+
+:OleksandrZinchenko rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Oleksandr Zinchenko" ;
+    :playsAs :DefenderPosition ;
+    :nationalityOf :Ukraine ;
+    :playerAge 28 ;
+    :marketValue "30000000"^^xsd:decimal .
+
+:OliviaSmith rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Olivia Smith" ;
+    :playsAs :MidfielderPosition .
+
+:OmariHutchinson rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Omari Hutchinson" ;
+    :playsAs :WingerPosition ;
+    :nationalityOf :England ;
+    :playerAge 21 ;
+    :marketValue "30000000"^^xsd:decimal ;
+    :representedBy :DavidManasseh .
+
+:PedroPorro rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Pedro Porro" ;
+    :playsAs :MidfielderPosition .
+
+:RasmusHojlund rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Rasmus Hojlund" ;
+    :playsAs :MidfielderPosition .
+
+:RobApter rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Rob Apter" ;
+    :playsAs :MidfielderPosition .
+
+:RomeluLukaku rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Romelu Lukaku" ;
+    :playsAs :MidfielderPosition .
+
+:Salah rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Salah" ;
+    :playsAs :MidfielderPosition .
+
+:SammyBraybrooke rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Sammy Braybrooke" ;
+    :playsAs :MidfielderPosition .
+
+:Savona rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Savona" ;
+    :playsAs :MidfielderPosition .
+
+:SerhouGuirassy rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Serhou Guirassy" ;
+    :playsAs :ForwardPosition ;
+    :nationalityOf :Guinea ;
+    :playerAge 28 ;
+    :marketValue "60000000"^^xsd:decimal ;
+    :representedBy :UniqueAgency .
+
+:Sindre_Walle_Egeli rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Sindre Walle Egeli" ;
+    :playsAs :MidfielderPosition .
+
+:StevenBenda rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Steven Benda" ;
+    :playsAs :MidfielderPosition .
+
+:ThiernoBarry rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Thierno Barry" ;
+    :playsAs :ForwardPosition ;
+    :nationalityOf :France ;
+    :playerAge 21 ;
+    :marketValue "30000000"^^xsd:decimal .
+
+:TomFellows rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Tom Fellows" ;
+    :playsAs :MidfielderPosition .
+
+:VeljkoMilosavljevic rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Veljko Milosavljevic" ;
+    :playsAs :MidfielderPosition .
+
+:Viktor_Gyokeres rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Viktor Gyokeres" ;
+    :playsAs :MidfielderPosition .
+
+:WilliamSaliba rdf:type owl:NamedIndividual , :Player ;
+    :playerName "William Saliba" ;
+    :playsAs :MidfielderPosition .
+
+:XaviSimons rdf:type owl:NamedIndividual , :Player ;
+    :playerName "Xavi Simons" ;
+    :playsAs :MidfielderPosition ;
+    :nationalityOf :Netherlands ;
+    :playerAge 22 ;
+    :marketValue "80000000"^^xsd:decimal ;
+    :representedBy :MinoRaiola_Successors .
+
+#################################################################
+#    Individuals - Managers (감독)
+#################################################################
+
+:ArneSlot rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Arne Slot" ;
+    :worksFor :Liverpool .
+
+:PepGuardiola rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Pep Guardiola" ;
+    :worksFor :ManchesterCity .
+
+:EnzoMaresca rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Enzo Maresca" ;
+    :worksFor :Chelsea .
+
+:MikelArteta rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Mikel Arteta" ;
+    :worksFor :Arsenal .
+
+:RubenAmorim rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Ruben Amorim" ;
+    :worksFor :ManchesterUnited .
+
+:AngePostecoglou rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Ange Postecoglou" ;
+    :worksFor :TottenhamHotspur .
+
+:EddieHowe rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Eddie Howe" ;
+    :worksFor :NewcastleUnited .
+
+:VincentKompany rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Vincent Kompany" ;
+    :worksFor :BayernMunich .
+
+:CarloAncelotti rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Carlo Ancelotti" ;
+    :worksFor :RealMadrid .
+
+:HansiFlick rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Hansi Flick" ;
+    :worksFor :Barcelona .
+
+:LuisEnrique rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Luis Enrique" ;
+    :worksFor :ParisSaintGermain .
+
+:ThiagoMotta rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Thiago Motta" ;
+    :worksFor :Juventus .
+
+:SimoneInzaghi rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Simone Inzaghi" ;
+    :worksFor :InterMilan .
+
+:PauloFonseca rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Paulo Fonseca" ;
+    :worksFor :ACMilan .
+
+:NuriSahin rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Nuri Sahin" ;
+    :worksFor :BorussiaDortmund .
+
+:DiegoSimeone rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Diego Simeone" ;
+    :worksFor :AtleticoMadrid .
+
+:AntonioContev rdf:type owl:NamedIndividual , :Manager ;
+    rdfs:label "Antonio Conte" ;
+    :worksFor :Napoli .
+
+#################################################################
+#    Individuals - Agents (에이전트)
+#################################################################
+
+:JorgeMendes rdf:type owl:NamedIndividual , :Agent ;
+    rdfs:label "Jorge Mendes" ;
+    rdfs:comment "포르투갈 출신 슈퍼 에이전트, Gestifute 대표"@ko .
+
+:MinoRaiola_Successors rdf:type owl:NamedIndividual , :Agent ;
+    rdfs:label "Mino Raiola Successors (Rafaela Pimenta)" ;
+    rdfs:comment "미노 라이올라 후계 에이전시"@ko .
+
+:PiniZahavi rdf:type owl:NamedIndividual , :Agent ;
+    rdfs:label "Pini Zahavi" ;
+    rdfs:comment "이스라엘 출신 베테랑 에이전트"@ko .
+
+:FaliRamadani rdf:type owl:NamedIndividual , :Agent ;
+    rdfs:label "Fali Ramadani" ;
+    rdfs:comment "발칸 지역 전문 에이전트"@ko .
+
+:KiaJoorabchian rdf:type owl:NamedIndividual , :Agent ;
+    rdfs:label "Kia Joorabchian" ;
+    rdfs:comment "이란계 영국 에이전트"@ko .
+
+:VolkerStruth rdf:type owl:NamedIndividual , :Agent ;
+    rdfs:label "Volker Struth" ;
+    rdfs:comment "독일 에이전트, Sports360 대표"@ko .
+
+:DavidManasseh rdf:type owl:NamedIndividual , :Agent ;
+    rdfs:label "David Manasseh" ;
+    rdfs:comment "영국 에이전트, New Era Global Sports"@ko .
+
+:UniqueAgency rdf:type owl:NamedIndividual , :Agent ;
+    rdfs:label "Unique Sports Group" ;
+    rdfs:comment "스웨덴/독일 전문 에이전시"@ko .
+
+#################################################################
+#    Individuals - Seasons & Transfer Windows
+#################################################################
+
+:Season2024_25 rdf:type owl:NamedIndividual , :Season ;
+    rdfs:label "2024-25 Season"@en , "2024-25 시즌"@ko .
+
+:Season2025_26 rdf:type owl:NamedIndividual , :Season ;
+    rdfs:label "2025-26 Season"@en , "2025-26 시즌"@ko .
+
+:SummerWindow2024 rdf:type owl:NamedIndividual , :TransferWindow ;
+    rdfs:label "Summer 2024 Transfer Window"@en ;
+    rdfs:comment "2024년 여름 이적시장 (6월-8월)"@ko .
+
+:WinterWindow2025 rdf:type owl:NamedIndividual , :TransferWindow ;
+    rdfs:label "Winter 2025 Transfer Window"@en ;
+    rdfs:comment "2025년 겨울 이적시장 (1월)"@ko .
+
+:SummerWindow2025 rdf:type owl:NamedIndividual , :TransferWindow ;
+    rdfs:label "Summer 2025 Transfer Window"@en ;
+    rdfs:comment "2025년 여름 이적시장 (6월-9월)"@ko .
+
+#################################################################
+#    Individuals - Contracts (계약)
+#################################################################
+
+:Contract_Isak_Liverpool rdf:type owl:NamedIndividual , :Contract ;
+    :contractDuration 5 ;
+    :contractStartDate "2025-09-02"^^xsd:date ;
+    :contractEndDate "2030-06-30"^^xsd:date ;
+    :salary "350000"^^xsd:decimal ;
+    rdfs:comment "Alexander Isak - Liverpool 계약 (주급 35만 파운드)"@ko .
+
+:Contract_Guehi_Liverpool rdf:type owl:NamedIndividual , :Contract ;
+    :contractDuration 5 ;
+    :contractStartDate "2025-09-01"^^xsd:date ;
+    :contractEndDate "2030-06-30"^^xsd:date ;
+    :salary "180000"^^xsd:decimal .
+
+:Contract_Ekitike_Liverpool rdf:type owl:NamedIndividual , :Contract ;
+    :contractDuration 5 ;
+    :contractStartDate "2025-07-23"^^xsd:date ;
+    :contractEndDate "2030-06-30"^^xsd:date ;
+    :salary "200000"^^xsd:decimal .
+
+:Contract_Simons_Tottenham rdf:type owl:NamedIndividual , :Contract ;
+    :contractDuration 6 ;
+    :contractStartDate "2025-08-29"^^xsd:date ;
+    :contractEndDate "2031-06-30"^^xsd:date ;
+    :salary "220000"^^xsd:decimal .
+
+:Contract_Jackson_Bayern rdf:type owl:NamedIndividual , :Contract ;
+    :contractDuration 5 ;
+    :contractStartDate "2025-09-01"^^xsd:date ;
+    :contractEndDate "2030-06-30"^^xsd:date ;
+    :salary "280000"^^xsd:decimal .
+
+:Contract_Hato_Chelsea rdf:type owl:NamedIndividual , :Contract ;
+    :contractDuration 6 ;
+    :contractStartDate "2025-08-03"^^xsd:date ;
+    :contractEndDate "2031-06-30"^^xsd:date ;
+    :salary "150000"^^xsd:decimal .
+
+#################################################################
+#    Individuals - Clauses (계약 조항)
+#################################################################
+
+:ReleaseClause_Isak rdf:type owl:NamedIndividual , :Clause ;
+    rdfs:label "Isak Release Clause" ;
+    rdfs:comment "계약 해지 조항 - 2028년 이후 활성화, €180M"@ko .
+
+:BuybackClause_Hato rdf:type owl:NamedIndividual , :Clause ;
+    rdfs:label "Hato Buyback Clause" ;
+    rdfs:comment "Ajax 바이백 조항 - 3년 후 €50M에 재영입 가능"@ko .
+
+:SellOnClause_Miller rdf:type owl:NamedIndividual , :Clause ;
+    rdfs:label "Miller Sell-on Clause" ;
+    rdfs:comment "Motherwell 재판매 수익 15%"@ko .
+
+#################################################################
+#    Individuals - Transfers (2025년 이적 데이터)
+#################################################################
+
+### Transfer 1: AlexanderIsak
+:Transfer_AlexanderIsak_Liverpool rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :AlexanderIsak ;
+    :transferredFrom :NewcastleUnited ;
+    :transferredTo :Liverpool ;
+    :hasFee "125000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-09-02T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by UniqueAgency"@en .
+
+:ArneSlot :influencedTransfers :Transfer_AlexanderIsak_Liverpool .
+
+:UniqueAgency :handledTransfer :Transfer_AlexanderIsak_Liverpool .
+
+### Transfer 2: DeclanRice
+:Transfer_DeclanRice_Arsenal rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :DeclanRice ;
+    :transferredFrom :WestHamUnited ;
+    :transferredTo :Arsenal ;
+    :hasFee "107000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2024-07-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2024 .
+
+### Transfer 3: Martin_Odegaard
+:Transfer_Martin_Odegaard_Arsenal rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :Martin_Odegaard ;
+    :transferredFrom :Olympiacos ;
+    :transferredTo :Arsenal ;
+    :hasFee "100000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-10-01T00:00:00"^^xsd:dateTime .
+
+### Transfer 4: RasmusHojlund
+:Transfer_RasmusHojlund_ManchesterUnited rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :RasmusHojlund ;
+    :transferredFrom :OlympiqueLyon ;
+    :transferredTo :ManchesterUnited ;
+    :hasFee "100000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-05-01T00:00:00"^^xsd:dateTime .
+
+### Transfer 5: HugoEkitike
+:Transfer_HugoEkitike_Liverpool rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :HugoEkitike ;
+    :transferredFrom :EintrachtFrankfurt ;
+    :transferredTo :Liverpool ;
+    :hasFee "79000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-07-23T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+:ArneSlot :influencedTransfers :Transfer_HugoEkitike_Liverpool .
+
+### Transfer 6: SerhouGuirassy
+:Transfer_SerhouGuirassy_Barcelona rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :SerhouGuirassy ;
+    :transferredFrom :BorussiaDortmund ;
+    :transferredTo :Barcelona ;
+    :hasFee "75000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2026-06-30T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2024 ;
+    rdfs:comment "Handled by UniqueAgency"@en .
+
+:UniqueAgency :handledTransfer :Transfer_SerhouGuirassy_Barcelona .
+
+### Transfer 7: LuisDiaz
+:Transfer_LuisDiaz_BayernMunich rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :LuisDiaz ;
+    :transferredFrom :Liverpool ;
+    :transferredTo :BayernMunich ;
+    :hasFee "75000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-07-27T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+:VincentKompany :influencedTransfers :Transfer_LuisDiaz_BayernMunich .
+
+### Transfer 8: IlliaZabarnyi
+:Transfer_IlliaZabarnyi_ParisSaintGermain rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :IlliaZabarnyi ;
+    :transferredFrom :Bournemouth ;
+    :transferredTo :ParisSaintGermain ;
+    :hasFee "66000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-11T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by PiniZahavi"@en .
+
+:PiniZahavi :handledTransfer :Transfer_IlliaZabarnyi_ParisSaintGermain .
+
+### Transfer 9: EberechiEze
+:Transfer_EberechiEze_Arsenal rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :EberechiEze ;
+    :transferredFrom :TottenhamHotspur ;
+    :transferredTo :Arsenal ;
+    :hasFee "60000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-31T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by DavidManasseh"@en .
+
+:MikelArteta :influencedTransfers :Transfer_EberechiEze_Arsenal .
+
+:DavidManasseh :handledTransfer :Transfer_EberechiEze_Arsenal .
+
+### Transfer 10: NicolasJackson
+:Transfer_NicolasJackson_BayernMunich rdf:type owl:NamedIndividual , :LoanTransfer ;
+    :involvesPlayer :NicolasJackson ;
+    :transferredFrom :Chelsea ;
+    :transferredTo :BayernMunich ;
+    :hasFee "56200000"^^xsd:decimal ;
+    :isLoan true ;
+    :hasOptionToBuy false ;
+    rdfs:comment "Handled by FaliRamadani"@en .
+
+:VincentKompany :influencedTransfers :Transfer_NicolasJackson_BayernMunich .
+
+:FaliRamadani :handledTransfer :Transfer_NicolasJackson_BayernMunich .
+
+### Transfer 11: DarwinNunez
+:Transfer_DarwinNunez_AlHilal rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :DarwinNunez ;
+    :transferredFrom :Liverpool ;
+    :transferredTo :AlHilal ;
+    :hasFee "53000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-09T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by JorgeMendes"@en .
+
+:JorgeMendes :handledTransfer :Transfer_DarwinNunez_AlHilal .
+
+### Transfer 12: XaviSimons
+:Transfer_XaviSimons_TottenhamHotspur rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :XaviSimons ;
+    :transferredFrom :RBLeipzig ;
+    :transferredTo :TottenhamHotspur ;
+    :hasFee "52000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-29T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by MinoRaiola_Successors"@en .
+
+:MinoRaiola_Successors :handledTransfer :Transfer_XaviSimons_TottenhamHotspur .
+
+### Transfer 13: MartinZubimendi
+:Transfer_MartinZubimendi_Arsenal rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :MartinZubimendi ;
+    :transferredFrom :RealSociedad ;
+    :transferredTo :Arsenal ;
+    :hasFee "51000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false .
+
+:MikelArteta :influencedTransfers :Transfer_MartinZubimendi_Arsenal .
+
+### Transfer 14: Viktor_Gyokeres
+:Transfer_Viktor_Gyokeres_Olympiacos rdf:type owl:NamedIndividual , :LoanTransfer ;
+    :involvesPlayer :Viktor_Gyokeres ;
+    :transferredFrom :Arsenal ;
+    :transferredTo :Olympiacos ;
+    :hasFee "50000000"^^xsd:decimal ;
+    :isLoan true ;
+    :hasOptionToBuy true ;
+    :signingDate "2025-10-01T00:00:00"^^xsd:dateTime .
+
+### Transfer 15: CarneyChukwuemeka
+:Transfer_CarneyChukwuemeka_BorussiaDortmund rdf:type owl:NamedIndividual , :LoanTransfer ;
+    :involvesPlayer :CarneyChukwuemeka ;
+    :transferredFrom :Chelsea ;
+    :transferredTo :BorussiaDortmund ;
+    :hasFee "48500000"^^xsd:decimal ;
+    :isLoan true ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-02-01T00:00:00"^^xsd:dateTime ;
+    rdfs:comment "Handled by KiaJoorabchian"@en .
+
+:KiaJoorabchian :handledTransfer :Transfer_CarneyChukwuemeka_BorussiaDortmund .
+
+### Transfer 16: JamieGittens
+:Transfer_JamieGittens_Chelsea rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :JamieGittens ;
+    :transferredFrom :BorussiaDortmund ;
+    :transferredTo :Chelsea ;
+    :hasFee "48500000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-06-10T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by VolkerStruth"@en .
+
+:VolkerStruth :handledTransfer :Transfer_JamieGittens_Chelsea .
+
+### Transfer 17: DouglasLuiz
+:Transfer_DouglasLuiz_NottinghamForest rdf:type owl:NamedIndividual , :LoanTransfer ;
+    :involvesPlayer :DouglasLuiz ;
+    :transferredFrom :Juventus ;
+    :transferredTo :NottinghamForest ;
+    :hasFee "42350000"^^xsd:decimal ;
+    :isLoan true ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-21T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by KiaJoorabchian"@en .
+
+:KiaJoorabchian :handledTransfer :Transfer_DouglasLuiz_NottinghamForest .
+
+### Transfer 18: JoaoPalhinha
+:Transfer_JoaoPalhinha_TottenhamHotspur rdf:type owl:NamedIndividual , :LoanTransfer ;
+    :involvesPlayer :JoaoPalhinha ;
+    :transferredFrom :BayernMunich ;
+    :transferredTo :TottenhamHotspur ;
+    :hasFee "42300000"^^xsd:decimal ;
+    :isLoan true ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 19: MalickThiaw
+:Transfer_MalickThiaw_NewcastleUnited rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :MalickThiaw ;
+    :transferredFrom :ACMilan ;
+    :transferredTo :NewcastleUnited ;
+    :hasFee "40000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-10T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by VolkerStruth"@en .
+
+:VolkerStruth :handledTransfer :Transfer_MalickThiaw_NewcastleUnited .
+
+### Transfer 20: MateusFernandes
+:Transfer_MateusFernandes_WestHamUnited rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :MateusFernandes ;
+    :transferredFrom :Southampton ;
+    :transferredTo :WestHamUnited ;
+    :hasFee "40000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false .
+
+### Transfer 21: OmariHutchinson
+:Transfer_OmariHutchinson_NottinghamForest rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :OmariHutchinson ;
+    :transferredFrom :IpswichTown ;
+    :transferredTo :NottinghamForest ;
+    :hasFee "37500000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-16T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by DavidManasseh"@en .
+
+:DavidManasseh :handledTransfer :Transfer_OmariHutchinson_NottinghamForest .
+
+### Transfer 22: JorrelHato
+:Transfer_JorrelHato_Chelsea rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :JorrelHato ;
+    :transferredFrom :Ajax ;
+    :transferredTo :Chelsea ;
+    :hasFee "37000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-03T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by MinoRaiola_Successors"@en .
+
+:EnzoMaresca :influencedTransfers :Transfer_JorrelHato_Chelsea .
+
+:MinoRaiola_Successors :handledTransfer :Transfer_JorrelHato_Chelsea .
+
+### Transfer 23: MarcGuehi
+:Transfer_MarcGuehi_Liverpool rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :MarcGuehi ;
+    :transferredFrom :CrystalPalace ;
+    :transferredTo :Liverpool ;
+    :hasFee "35000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-09-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by DavidManasseh"@en .
+
+:ArneSlot :influencedTransfers :Transfer_MarcGuehi_Liverpool .
+
+:DavidManasseh :handledTransfer :Transfer_MarcGuehi_Liverpool .
+
+### Transfer 24: MarcusRashford
+:Transfer_MarcusRashford_Barcelona rdf:type owl:NamedIndividual , :LoanTransfer ;
+    :involvesPlayer :MarcusRashford ;
+    :transferredFrom :ManchesterUnited ;
+    :transferredTo :Barcelona ;
+    :hasFee "35000000"^^xsd:decimal ;
+    :isLoan true ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-07-23T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 25: ThiernoBarry
+:Transfer_ThiernoBarry_Everton rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :ThiernoBarry ;
+    :transferredFrom :Villarreal ;
+    :transferredTo :Everton ;
+    :hasFee "34500000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-07-02T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 26: ChristianPulisic
+:Transfer_ChristianPulisic_ACMilan rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :ChristianPulisic ;
+    :transferredFrom :Napoli ;
+    :transferredTo :ACMilan ;
+    :hasFee "32000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-16T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 27: JamesTrafford
+:Transfer_JamesTrafford_ManchesterCity rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :JamesTrafford ;
+    :transferredFrom :Burnley ;
+    :transferredTo :ManchesterCity ;
+    :hasFee "31000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy true ;
+    :signingDate "2025-07-25T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by JorgeMendes"@en .
+
+:PepGuardiola :influencedTransfers :Transfer_JamesTrafford_ManchesterCity .
+
+:JorgeMendes :handledTransfer :Transfer_JamesTrafford_ManchesterCity .
+
+### Transfer 28: OleksandrZinchenko
+:Transfer_OleksandrZinchenko_NottinghamForest rdf:type owl:NamedIndividual , :LoanTransfer ;
+    :involvesPlayer :OleksandrZinchenko ;
+    :transferredFrom :Arsenal ;
+    :transferredTo :NottinghamForest ;
+    :hasFee "30000000"^^xsd:decimal ;
+    :isLoan true ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-09-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 29: DilaneBakwa
+:Transfer_DilaneBakwa_NottinghamForest rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :DilaneBakwa ;
+    :transferredFrom :Strasbourg ;
+    :transferredTo :NottinghamForest ;
+    :hasFee "30000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-09-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 30: JamesMcAtee
+:Transfer_JamesMcAtee_NottinghamForest rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :JamesMcAtee ;
+    :transferredFrom :ManchesterCity ;
+    :transferredTo :NottinghamForest ;
+    :hasFee "30000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-16T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 31: GianluigiDonnarumma
+:Transfer_GianluigiDonnarumma_ManchesterCity rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :GianluigiDonnarumma ;
+    :transferredFrom :Paris_St ;
+    :transferredTo :ManchesterCity ;
+    :hasFee "26000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy true ;
+    :signingDate "2025-09-02T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by JorgeMendes"@en .
+
+:PepGuardiola :influencedTransfers :Transfer_GianluigiDonnarumma_ManchesterCity .
+
+:JorgeMendes :handledTransfer :Transfer_GianluigiDonnarumma_ManchesterCity .
+
+### Transfer 32: ArnaudKalimuendo
+:Transfer_ArnaudKalimuendo_NottinghamForest rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :ArnaudKalimuendo ;
+    :transferredFrom :Rennes ;
+    :transferredTo :NottinghamForest ;
+    :hasFee "26000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-18T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 33: DjordjePetrovic
+:Transfer_DjordjePetrovic_Bournemouth rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :DjordjePetrovic ;
+    :transferredFrom :Chelsea ;
+    :transferredTo :Bournemouth ;
+    :hasFee "25000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-07-16T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by FaliRamadani"@en .
+
+:FaliRamadani :handledTransfer :Transfer_DjordjePetrovic_Bournemouth .
+
+### Transfer 34: NoahOkafor
+:Transfer_NoahOkafor_LeedsUnited rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :NoahOkafor ;
+    :transferredFrom :ACMilan ;
+    :transferredTo :LeedsUnited ;
+    :hasFee "18000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-21T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 35: Sindre_Walle_Egeli
+:Transfer_Sindre_Walle_Egeli_Ipswich_Town rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :Sindre_Walle_Egeli ;
+    :transferredFrom :FC_Nordsjaelland ;
+    :transferredTo :Ipswich_Town ;
+    :hasFee "17500000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-30T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 36: AntonStach
+:Transfer_AntonStach_LeedsUnited rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :AntonStach ;
+    :transferredFrom :Hoffenheim ;
+    :transferredTo :LeedsUnited ;
+    :hasFee "17000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-07-22T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 37: GranitXhaka
+:Transfer_GranitXhaka_Sunderland rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :GranitXhaka ;
+    :transferredFrom :BayerLeverkusen ;
+    :transferredTo :Sunderland ;
+    :hasFee "17000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-07-30T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 38: Savona
+:Transfer_Savona_NottinghamForest rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :Savona ;
+    :transferredFrom :Juventus ;
+    :transferredTo :NottinghamForest ;
+    :hasFee "15500000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-30T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 39: ChristianNorgaard
+:Transfer_ChristianNorgaard_Arsenal rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :ChristianNorgaard ;
+    :transferredFrom :Brentford ;
+    :transferredTo :Arsenal ;
+    :hasFee "15000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy true ;
+    :signingDate "2025-07-10T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 40: ThiernoBarry
+:Transfer_ThiernoBarry_Villarreal rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :ThiernoBarry ;
+    :transferredFrom :Basel ;
+    :transferredTo :Villarreal ;
+    :hasFee "13000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2024-08-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2024 .
+
+### Transfer 41: AlexJimenez
+:Transfer_AlexJimenez_Bournemouth rdf:type owl:NamedIndividual , :LoanTransfer ;
+    :involvesPlayer :AlexJimenez ;
+    :transferredFrom :ACMilan ;
+    :transferredTo :Bournemouth ;
+    :hasFee "13000000"^^xsd:decimal ;
+    :isLoan true ;
+    :hasOptionToBuy false .
+
+### Transfer 42: VeljkoMilosavljevic
+:Transfer_VeljkoMilosavljevic_Bournemouth rdf:type owl:NamedIndividual , :LoanTransfer ;
+    :involvesPlayer :VeljkoMilosavljevic ;
+    :transferredFrom :RedStarBelgrade ;
+    :transferredTo :Bournemouth ;
+    :hasFee "13000000"^^xsd:decimal ;
+    :isLoan true ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-09-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 43: FinnAzaz
+:Transfer_FinnAzaz_Southampton rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :FinnAzaz ;
+    :transferredFrom :Middlesbrough ;
+    :transferredTo :Southampton ;
+    :hasFee "12000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false .
+
+### Transfer 44: CasparJander
+:Transfer_CasparJander_Southampton rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :CasparJander ;
+    :transferredFrom :FCNuremberg ;
+    :transferredTo :Southampton ;
+    :hasFee "10400000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-29T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 45: RobApter
+:Transfer_RobApter_CharltonAthletic rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :RobApter ;
+    :transferredFrom :Blackpool ;
+    :transferredTo :CharltonAthletic ;
+    :hasFee "10000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-07-27T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 46: IgorJesus
+:Transfer_IgorJesus_NottinghamForest rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :IgorJesus ;
+    :transferredFrom :Botafogo ;
+    :transferredTo :NottinghamForest ;
+    :hasFee "10000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-07-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 47: Nathan_Broadhead
+:Transfer_Nathan_Broadhead_Wrexham rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :Nathan_Broadhead ;
+    :transferredFrom :Ipswich_Town ;
+    :transferredTo :Wrexham ;
+    :hasFee "10000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-14T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 48: DavidStrelec
+:Transfer_DavidStrelec_Middlesbrough rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :DavidStrelec ;
+    :transferredFrom :SlovanBratislava ;
+    :transferredTo :Middlesbrough ;
+    :hasFee "10000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-09-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 49: JaydenWareham
+:Transfer_JaydenWareham_ExeterCity rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :JaydenWareham ;
+    :transferredFrom :Reading ;
+    :transferredTo :ExeterCity ;
+    :hasFee "10000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-06-26T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 50: James_Justin
+:Transfer_James_Justin_Leeds_United rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :James_Justin ;
+    :transferredFrom :Leicester_City ;
+    :transferredTo :Leeds_United ;
+    :hasFee "10000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-25T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 51: PedroPorro
+:Transfer_PedroPorro_TottenhamHotspur rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :PedroPorro ;
+    :transferredFrom :Frankfurt ;
+    :transferredTo :TottenhamHotspur ;
+    :hasFee "10000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-05-01T00:00:00"^^xsd:dateTime .
+
+### Transfer 52: IdrisElMizouni
+:Transfer_IdrisElMizouni_LeytonOrient rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :IdrisElMizouni ;
+    :transferredFrom :OxfordUnited ;
+    :transferredTo :LeytonOrient ;
+    :hasFee "10000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-07-04T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 53: KepaArrizabalaga
+:Transfer_KepaArrizabalaga_Arsenal rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :KepaArrizabalaga ;
+    :transferredFrom :Chelsea ;
+    :transferredTo :Arsenal ;
+    :hasFee "5000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false .
+
+### Transfer 54: LennonMiller
+:Transfer_LennonMiller_Udinese rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :LennonMiller ;
+    :transferredFrom :Motherwell ;
+    :transferredTo :Udinese ;
+    :hasFee "4750000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-11T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 55: MarkoLazetic
+:Transfer_MarkoLazetic_Aberdeen rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :MarkoLazetic ;
+    :transferredFrom :ACMilan ;
+    :transferredTo :Aberdeen ;
+    :hasFee "3500000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-18T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 56: Borna_Sosa
+:Transfer_Borna_Sosa_CrystalPalace rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :Borna_Sosa ;
+    :transferredFrom :AFC_Ajax ;
+    :transferredTo :CrystalPalace ;
+    :hasFee "3000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-07-11T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 57: Alex_Oxlade_Chamberlain
+:Transfer_Alex_Oxlade_Chamberlain_Birmingham_City rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :Alex_Oxlade_Chamberlain ;
+    :transferredFrom :Besiktas ;
+    :transferredTo :Birmingham_City ;
+    :hasFee "1750000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-29T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 58: JonMcLaughlin
+:Transfer_JonMcLaughlin_Middlesbrough rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :JonMcLaughlin ;
+    :transferredFrom :Swansea ;
+    :transferredTo :Middlesbrough ;
+    :hasFee "1000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-09-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 59: OliviaSmith
+:Transfer_OliviaSmith_Arsenal rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :OliviaSmith ;
+    :transferredFrom :Liverpool ;
+    :transferredTo :Arsenal ;
+    :hasFee "1000000"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-07-10T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 60: ManuelAkanji
+:Transfer_ManuelAkanji_InterMilan rdf:type owl:NamedIndividual , :LoanTransfer ;
+    :involvesPlayer :ManuelAkanji ;
+    :transferredFrom :ManchesterCity ;
+    :transferredTo :InterMilan ;
+    :hasFee "870000"^^xsd:decimal ;
+    :isLoan true ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-09-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 61: JaydeeCanvot
+:Transfer_JaydeeCanvot_CrystalPalace rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :JaydeeCanvot ;
+    :transferredFrom :Toulouse ;
+    :transferredTo :CrystalPalace ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-09-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    :isFreeTransfer true .
+
+### Transfer 62: ChristantusUche
+:Transfer_ChristantusUche_CrystalPalace rdf:type owl:NamedIndividual , :LoanTransfer ;
+    :involvesPlayer :ChristantusUche ;
+    :transferredFrom :Getafe ;
+    :transferredTo :CrystalPalace ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan true ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-09-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 .
+
+### Transfer 63: JarrellQuansah
+:Transfer_JarrellQuansah_BayerLeverkusen rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :JarrellQuansah ;
+    :transferredFrom :Liverpool ;
+    :transferredTo :BayerLeverkusen ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-09-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    :isFreeTransfer true .
+
+### Transfer 64: NickWoltemade
+:Transfer_NickWoltemade_NewcastleUnited rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :NickWoltemade ;
+    :transferredFrom :Stuttgart ;
+    :transferredTo :NewcastleUnited ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-08-31T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    :isFreeTransfer true .
+
+### Transfer 65: DjordjePetrovic
+:Transfer_DjordjePetrovic_Strasbourg rdf:type owl:NamedIndividual , :LoanTransfer ;
+    :involvesPlayer :DjordjePetrovic ;
+    :transferredFrom :Chelsea ;
+    :transferredTo :Strasbourg ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan true ;
+    :hasOptionToBuy false ;
+    :signingDate "2024-01-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :WinterWindow2025 ;
+    rdfs:comment "Handled by FaliRamadani"@en .
+
+:FaliRamadani :handledTransfer :Transfer_DjordjePetrovic_Strasbourg .
+
+### Transfer 66: Benjamin_Sesko
+:Transfer_Benjamin_Sesko_Arsenal rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :Benjamin_Sesko ;
+    :transferredFrom :RBLeipzig ;
+    :transferredTo :Arsenal ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-07-03T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    :isFreeTransfer true .
+
+### Transfer 67: Jose_Mourinho
+:Transfer_Jose_Mourinho_Benfica rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :Jose_Mourinho ;
+    :transferredFrom :Chelsea ;
+    :transferredTo :Benfica ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-09-30T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    :isFreeTransfer true .
+
+### Transfer 68: RomeluLukaku
+:Transfer_RomeluLukaku_Napoli rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :RomeluLukaku ;
+    :transferredFrom :Inter ;
+    :transferredTo :Napoli ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-06-30T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    :isFreeTransfer true .
+
+### Transfer 69: JonathanDavid
+:Transfer_JonathanDavid_Inter rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :JonathanDavid ;
+    :transferredFrom :Juventus ;
+    :transferredTo :Inter ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-06-30T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    :isFreeTransfer true .
+
+### Transfer 70: BrennanJohnson
+:Transfer_BrennanJohnson_TottenhamHotspur rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :BrennanJohnson ;
+    :transferredFrom :ManchesterUnited ;
+    :transferredTo :TottenhamHotspur ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-10-01T00:00:00"^^xsd:dateTime ;
+    :isFreeTransfer true .
+
+### Transfer 71: FlorianWirtz
+:Transfer_FlorianWirtz_Liverpool rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :FlorianWirtz ;
+    :transferredFrom :Chelsea ;
+    :transferredTo :Liverpool ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-10-04T00:00:00"^^xsd:dateTime ;
+    :isFreeTransfer true .
+
+### Transfer 72: WilliamSaliba
+:Transfer_WilliamSaliba_Arsenal rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :WilliamSaliba ;
+    :transferredFrom :RealMadrid ;
+    :transferredTo :Arsenal ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-09-26T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    :isFreeTransfer true .
+
+### Transfer 73: Salah
+:Transfer_Salah_Egypt rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :Salah ;
+    :transferredFrom :Liverpool ;
+    :transferredTo :Egypt ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-10-08T00:00:00"^^xsd:dateTime ;
+    :isFreeTransfer true .
+
+### Transfer 74: CapeVerde
+:Transfer_CapeVerde_CapeVerde rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :CapeVerde ;
+    :transferredFrom :Libya ;
+    :transferredTo :CapeVerde ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-10-08T00:00:00"^^xsd:dateTime ;
+    :isFreeTransfer true .
+
+### Transfer 75: CapeVerde
+:Transfer_CapeVerde_Eswatini rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :CapeVerde ;
+    :transferredFrom :CapeVerde ;
+    :transferredTo :Eswatini ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-10-08T00:00:00"^^xsd:dateTime ;
+    :isFreeTransfer true .
+
+### Transfer 76: DuncanMcGuire
+:Transfer_DuncanMcGuire_BlackburnRovers rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :DuncanMcGuire ;
+    :transferredFrom :OrlandoCity ;
+    :transferredTo :BlackburnRovers ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2024-09-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2024 ;
+    :isFreeTransfer true .
+
+### Transfer 77: IlkayGundogan
+:Transfer_IlkayGundogan_Galatasaray rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :IlkayGundogan ;
+    :transferredFrom :ManchesterCity ;
+    :transferredTo :Galatasaray ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-09-02T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2025 ;
+    rdfs:comment "Handled by VolkerStruth"@en ;
+    :isFreeTransfer true .
+
+:VolkerStruth :handledTransfer :Transfer_IlkayGundogan_Galatasaray .
+
+### Transfer 78: IlkayGundogan
+:Transfer_IlkayGundogan_ManchesterCity rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :IlkayGundogan ;
+    :transferredFrom :Barcelona ;
+    :transferredTo :ManchesterCity ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2024-08-01T00:00:00"^^xsd:dateTime ;
+    :inWindow :SummerWindow2024 ;
+    rdfs:comment "Handled by VolkerStruth"@en ;
+    :isFreeTransfer true .
+
+:VolkerStruth :handledTransfer :Transfer_IlkayGundogan_ManchesterCity .
+
+### Transfer 79: KostasTsimikas
+:Transfer_KostasTsimikas_Roma rdf:type owl:NamedIndividual , :LoanTransfer ;
+    :involvesPlayer :KostasTsimikas ;
+    :transferredFrom :Liverpool ;
+    :transferredTo :Roma ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan true ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-10-10T00:00:00"^^xsd:dateTime .
+
+### Transfer 80: KevinDeBruyne
+:Transfer_KevinDeBruyne_Napoli rdf:type owl:NamedIndividual , :PermanentTransfer ;
+    :involvesPlayer :KevinDeBruyne ;
+    :transferredFrom :ManchesterCity ;
+    :transferredTo :Napoli ;
+    :hasFee "0"^^xsd:decimal ;
+    :isLoan false ;
+    :hasOptionToBuy false ;
+    :signingDate "2025-10-01T00:00:00"^^xsd:dateTime ;
+    rdfs:comment "Handled by PiniZahavi"@en ;
+    :isFreeTransfer true .
+
+:PiniZahavi :handledTransfer :Transfer_KevinDeBruyne_Napoli .
+
+#################################################################
+#    SWRL Rules (Protégé에서 사용)
+#################################################################
+
+# 규칙 1: 이적료가 0이면 자유이적
+# Transfer(?t) ^ hasFee(?t, 0) ^ isLoan(?t, false) -> isFreeTransfer(?t, true)
+
+# 규칙 2: 프리미어리그 이적이면 해당 리그 hasTransfers에 추가
+# Transfer(?t) ^ transferredTo(?t, ?c) ^ belongsToLeague(?c, :PremierLeague) 
+#   -> hasTransfers(:PremierLeague, ?t)
+

@@ -21,13 +21,13 @@ export async function POST(request: NextRequest) {
     }
 
     // FastAPI로 요청 전달
-    const response = await fetch(`${FASTAPI_BASE_URL}/ask`, {
+    const response = await fetch(`${FASTAPI_BASE_URL}/llm/ask`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        resume_id: resumeId,
+        resume_ids: [resumeId],
         question: question,
       }),
     });

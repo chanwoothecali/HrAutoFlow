@@ -52,6 +52,7 @@ export type CandidateDetail = {
 
   score: number;
   keywords: string[];
+  resumeId?: number;
 
   sections: {
     overview: CandidateOverviewSection;

@@ -173,8 +173,34 @@ class CandidateService:
 
             print(f"[Step 5] DB 저장 완료: analysis_id={analysis.id}")
 
+            # ============================================
+            # 6. 지원자 점수 계산 및 업데이트
+            # ============================================
+            print(f"\n[Step 6] 지원자 점수 계산 중...")
+
+            # 스킬 점수를 기반으로 전체 점수 계산
+            applicant_score = 0
+            if skills and isinstance(skills, dict) and len(skills) > 0:
+                # 상위 5개 스킬의 평균 점수 계산
+                top_skills = sorted(skills.items(), key=lambda x: x[1], reverse=True)[:5]
+                if top_skills:
+                    total_score = sum(score for _, score in top_skills)
+                    applicant_score = int(total_score / len(top_skills))
+                    print(f"  - 상위 스킬: {[f'{skill}({score})' for skill, score in top_skills]}")
+                    print(f"  - 계산된 점수: {applicant_score}")
+
+            # Applicant 점수 업데이트
+            from app.models import Applicant
+            applicant = db.query(Applicant).filter(Applicant.id == resume.applicant_id).first()
+            if applicant:
+                applicant.score = applicant_score
+                db.commit()
+                print(f"[Step 6] 점수 업데이트 완료: {applicant_score}")
+            else:
+                print(f"[Step 6] ⚠️ 지원자를 찾을 수 없습니다.")
+
             print(f"\n{'=' * 60}")
-            print(f"[Pipeline] 완료: resume_id={resume_id}")
+            print(f"[Pipeline] 완료: resume_id={resume_id}, score={applicant_score}")
             print(f"{'=' * 60}\n")
 
             return {

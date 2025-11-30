@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { CandidateDetail } from '@/types/candidate';
 import CandidateOverview from '@/components/candidates/CandidateOverview';
+import ResumeQA from '@/components/candidates/ResumeQA';
 import type { Position } from '@/types/position';
 import { apiClient } from '@/lib/api-client';
 
@@ -230,7 +231,15 @@ export default function CandidatesDetailPage() {
 
         {/* RIGHT: Overview 패널 */}
         {selectedCandidate ? (
-          <CandidateOverview candidate={selectedCandidate} />
+          <div className="flex flex-1 flex-col gap-6 overflow-auto">
+            <CandidateOverview candidate={selectedCandidate} />
+            {selectedCandidate.resumeId && (
+              <ResumeQA
+                resumeId={String(selectedCandidate.resumeId)}
+                candidateName={selectedCandidate.name}
+              />
+            )}
+          </div>
         ) : (
           <div className="flex flex-1 items-center justify-center rounded-2xl border border-[#E6E6E7] bg-white text-sm text-slate-500">
             지원자를 선택해 주세요.

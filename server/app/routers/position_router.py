@@ -57,11 +57,8 @@ async def get_positions(db: Session = Depends(get_db)):
 
     result = []
     for pos in positions:
-        # title을 소문자로 변환하고 공백 제거하여 id 생성
-        position_id = pos.title.lower().replace(" ", "")
-
         result.append({
-            "id": position_id,
+            "id": str(pos.id),  # 실제 DB ID를 문자열로 변환
             "title": pos.title,
             "department": pos.department or "",
             "techStack": ", ".join(pos.required_skills) if pos.required_skills else "",
@@ -81,19 +78,17 @@ async def get_positions(db: Session = Depends(get_db)):
 # ==========================================
 @router.get("/positions/{position_id}/candidates", response_model=List[CandidateListItem])
 async def get_candidates_by_position(
-        position_id: str,
+        position_id: int,
         db: Session = Depends(get_db)
 ):
     """
     GET /positions/{position_id}/candidates
     특정 포지션의 지원자 목록 조회
 
-    예: GET /positions/backend/candidates
+    예: GET /positions/1/candidates
     """
-    # position_id (예: "backend")로 Position 찾기
-    position = db.query(Position).filter(
-        func.lower(func.replace(Position.title, ' ', '')) == position_id.lower()
-    ).first()
+    # position_id로 Position 찾기
+    position = db.query(Position).filter(Position.id == position_id).first()
 
     if not position:
         raise HTTPException(status_code=404, detail="Position not found")
@@ -106,7 +101,7 @@ async def get_candidates_by_position(
     return [
         {
             "id": str(c.id),
-            "positionId": position_id,
+            "positionId": str(position_id),
             "name": c.name,
             "email": c.email or "",
             "positionTitle": c.position_rel.title,
@@ -126,11 +121,13 @@ async def get_recommended_candidates(
         limit: int = Query(5, ge=1, le=20),
         db: Session = Depends(get_db)
 ):
-    # position_id가 있는 지원자만 조회 (null 제외)
+    # position_id가 있고 유효한 점수가 있는 지원자만 조회
     candidates = db.query(Applicant).options(
         joinedload(Applicant.position_rel)
     ).filter(
-        Applicant.position_id.isnot(None)  # ← 추가
+        Applicant.position_id.isnot(None),  # position_id 필수
+        Applicant.score.isnot(None),         # score가 null이 아닌 것만
+        Applicant.score > 0                   # score가 0보다 큰 것만
     ).order_by(Applicant.score.desc()).limit(limit).all()
 
     return [
@@ -140,7 +137,7 @@ async def get_recommended_candidates(
             "email": c.email or "",
             "role": c.position_rel.title if c.position_rel else "Unknown",
             "score": c.score or 0,
-            "positionId": c.position_rel.title.lower().replace(" ", "") if c.position_rel else "unknown"
+            "positionId": str(c.position_id) if c.position_id else "0"
         }
         for c in candidates
     ]
@@ -149,7 +146,7 @@ async def get_recommended_candidates(
 # ==========================================
 # 5. 지원자 상세 정보
 # ==========================================
-@router.get("/candidates/{candidate_id}", response_model=CandidateDetailResponse)
+@router.get("/candidates/{candidate_id}")
 async def get_candidate_detail(
         candidate_id: int,
         db: Session = Depends(get_db)
@@ -168,11 +165,10 @@ async def get_candidate_detail(
 
     # 첫 번째 이력서의 분석 결과 가져오기
     analysis = None
+    resume_id = None
     if candidate.resumes and len(candidate.resumes) > 0:
+        resume_id = candidate.resumes[0].id
         analysis = candidate.resumes[0].analysis
-
-    # position_id 생성
-    position_id = candidate.position_rel.title.lower().replace(" ", "")
 
     # skills_summary를 summaryChart로 변환
     summary_chart = []
@@ -203,7 +199,7 @@ async def get_candidate_detail(
         "name": candidate.name,
         "email": candidate.email or "",
         "title": candidate.position_rel.title,
-        "positionId": position_id,
+        "positionId": str(candidate.position_id),
         "positionTitle": candidate.position_rel.title,
         "experienceYears": candidate.experience_years or 0,
         "experienceLabel": f"{candidate.experience_years} years" if candidate.experience_years else "0 years",
@@ -213,6 +209,7 @@ async def get_candidate_detail(
         "keywords": analysis.top_tags if analysis and analysis.top_tags else [],
         "skills": analysis.top_tags if analysis and analysis.top_tags else [],
         "recommendation": analysis.summary if analysis else "",
+        "resumeId": resume_id,
         "sections": {
             "overview": {
                 "summary": analysis.summary if analysis else "",
@@ -230,7 +227,7 @@ async def get_candidate_detail(
 @router.get("/applicants", response_model=List[CandidateListItem])
 async def get_all_applicants(
         status: Optional[str] = Query(None, description="Filter by status"),
-        position_id: Optional[str] = Query(None, description="Filter by position"),
+        position_id: Optional[int] = Query(None, description="Filter by position ID"),
         db: Session = Depends(get_db)
 ):
     """
@@ -247,18 +244,14 @@ async def get_all_applicants(
 
     # position 필터
     if position_id:
-        position = db.query(Position).filter(
-            func.lower(func.replace(Position.title, ' ', '')) == position_id.lower()
-        ).first()
-        if position:
-            query = query.filter(Applicant.position_id == position.id)
+        query = query.filter(Applicant.position_id == position_id)
 
     applicants = query.all()
 
     return [
         {
             "id": str(a.id),
-            "positionId": a.position_rel.title.lower().replace(" ", ""),
+            "positionId": str(a.position_id),
             "name": a.name,
             "email": a.email or "",
             "positionTitle": a.position_rel.title,

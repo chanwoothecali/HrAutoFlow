@@ -2,12 +2,10 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import select
 
 from app.db import get_db, DATABASE_URL
 from app.services.llm_service import llm_service
 from app.schemas.candidate_schema import QuestionRequest, FeedbackRequest
-from app.models import VectorStore
 
 router = APIRouter(prefix="/api/llm", tags=["LLM"])
 
@@ -17,7 +15,7 @@ async def ask_question(
         request: QuestionRequest,
         db: Session = Depends(get_db)
 ):
-    """RAG 기반 질의응답 (동기 방식)"""
+    """RAG 기반 질의응답"""
 
     try:
         answers = []
@@ -27,54 +25,14 @@ async def ask_question(
 
             print(f"[RAG] 질문 처리 중: resume_id={resume_id}")
 
-            # 동기 방식으로 RAG 쿼리 실행
             try:
-                # 1. 질문 임베딩 생성 (동기)
-                query_embedding = llm_service.embeddings.embed_query(request.question)
-
-                # 2. Vector 유사도 검색 (동기)
-                stmt = select(
-                    VectorStore.content,
-                    VectorStore.meta_data,
-                    (1 - VectorStore.embedding.cosine_distance(query_embedding)).label('similarity')
-                ).where(
-                    VectorStore.doc_id == doc_id
-                ).order_by(
-                    VectorStore.embedding.cosine_distance(query_embedding)
-                ).limit(5)
-
-                result = db.execute(stmt)
-                rows = result.all()
-
-                if not rows:
-                    answer_text = "해당 이력서에서 관련 정보를 찾을 수 없습니다."
-                    chunks = []
-                    relevance_score = 0.0
-                else:
-                    # 3. 검색된 청크로 컨텍스트 구성
-                    chunks = [row.content for row in rows]
-                    context = "\n\n".join(chunks)
-
-                    # 4. LLM으로 답변 생성
-                    from langchain_core.prompts import ChatPromptTemplate
-                    from langchain_core.output_parsers import StrOutputParser
-
-                    prompt = ChatPromptTemplate.from_template("""다음 이력서 정보를 바탕으로 질문에 답변해주세요.
-
-컨텍스트:
-{context}
-
-질문: {question}
-
-답변 (한국어):""")
-
-                    chain = prompt | llm_service.llm | StrOutputParser()
-                    answer_text = await chain.ainvoke({
-                        "context": context,
-                        "question": request.question
-                    })
-
-                    relevance_score = float(rows[0].similarity) if rows else 0.0
+                # rag_query 메서드 사용 (커스텀 VectorStore 사용)
+                result = await llm_service.rag_query(
+                    question=request.question,
+                    doc_id=doc_id,
+                    k=5,
+                    db_session=db
+                )
 
                 print(f"[RAG] 답변 생성 완료: resume_id={resume_id}")
 
@@ -83,9 +41,9 @@ async def ask_question(
                 # qa_history = QAHistory(
                 #     resume_id=resume_id,
                 #     question=request.question,
-                #     answer=answer_text,
-                #     retrieved_chunks=chunks,
-                #     relevance_score=relevance_score
+                #     answer=result["answer"],
+                #     retrieved_chunks=result["chunks"],
+                #     relevance_score=result["relevance_score"]
                 # )
                 # db.add(qa_history)
                 # db.commit()
@@ -94,9 +52,9 @@ async def ask_question(
                 answers.append({
                     "qa_id": 1,  # qa_history.id 사용하려면 위 주석 해제
                     "resume_id": resume_id,
-                    "answer": answer_text.strip(),
-                    "sources": chunks[:3],  # 상위 3개만
-                    "relevance_score": relevance_score
+                    "answer": result["answer"],
+                    "sources": result["chunks"][:3],  # 상위 3개만
+                    "relevance_score": result["relevance_score"]
                 })
 
             except Exception as e:

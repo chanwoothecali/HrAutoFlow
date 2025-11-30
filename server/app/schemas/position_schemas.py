@@ -100,7 +100,7 @@ class CandidateDetailResponse(BaseModel):
     positionTitle: str = Field(..., description="지원 포지션 제목")
     experienceYears: int = Field(..., description="경력 연수")
     experienceLabel: str = Field(..., description="경력 레이블")
-    education: str = Field(..., description="학력")
+    degree: str = Field(..., alias="education", description="학력")
     status: str = Field(..., description="지원 상태")
     score: int = Field(..., description="평가 점수")
     keywords: List[str] = Field(..., description="키워드")
@@ -108,7 +108,7 @@ class CandidateDetailResponse(BaseModel):
     recommendation: str = Field(..., description="추천 코멘트")
     sections: Dict[str, Any] = Field(..., description="상세 섹션")
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 # ==========================================

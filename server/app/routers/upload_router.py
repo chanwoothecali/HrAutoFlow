@@ -23,7 +23,7 @@ async def upload_resume(
         file: UploadFile = File(...),
         name: str = Form(...),
         email: Optional[str] = Form(None),
-        position: str = Form(...),
+        position_id: int = Form(...),
         phone: Optional[str] = Form(None),
         experience_years: Optional[int] = Form(None),
         education: Optional[str] = Form(None),
@@ -72,20 +72,18 @@ async def upload_resume(
 
         print(f"[Upload] uploaded_file 저장: id={uploaded_file.id}")
 
-        # 4. Position 찾기 또는 생성
-        position_obj = db.query(Position).filter(Position.title == position).first()
+        # 4. Position 확인
+        position_obj = db.query(Position).filter(Position.id == position_id).first()
         if not position_obj:
-            position_obj = Position(title=position, status='active')
-            db.add(position_obj)
-            db.flush()
+            raise HTTPException(status_code=404, detail=f"Position with id {position_id} not found")
 
         # 5. DB 저장 - applicants 테이블
         applicant = Applicant(
             name=name,
             email=email,
             phone=phone,
-            position=position,
-            position_id=position_obj.id,
+            position=position_obj.title,  # 레거시 필드에 title 저장
+            position_id=position_id,
             experience_years=experience_years,
             education=education,
             status="pending",
@@ -114,20 +112,23 @@ async def upload_resume(
             candidate_service.process_resume_pipeline,
             resume_id=resume.id,
             file_path=str(file_path),
-            position=position,
+            position=position_obj.title,
             db=db
         )
 
+        # 프론트엔드에서 기대하는 형식으로 응답 반환
         return JSONResponse(content={
-            "success": True,
-            "message": "파일 업로드 성공. 백그라운드에서 분석 중입니다.",
-            "applicant_id": applicant.id,
-            "resume_id": resume.id,
-            "uploaded_file_id": uploaded_file.id,
-            "filename": file.filename,
-            "file_size": file_size,
-            "processing_status": "pending"
-        })
+            "id": str(applicant.id),
+            "name": applicant.name,
+            "email": applicant.email or "",
+            "positionId": str(position_id),
+            "positionTitle": position_obj.title,
+            "department": position_obj.department or "",
+            "status": applicant.status,
+            "score": applicant.score or 0,
+            "resumeId": resume.id,
+            "processingStatus": resume.processing_status
+        }, status_code=201)
 
     except Exception as e:
         db.rollback()
