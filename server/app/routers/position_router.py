@@ -137,7 +137,9 @@ async def get_recommended_candidates(
             "email": c.email or "",
             "role": c.position_rel.title if c.position_rel else "Unknown",
             "score": c.score or 0,
-            "positionId": str(c.position_id) if c.position_id else "0"
+            "positionId": str(c.position_id) if c.position_id else "0",
+            "education": c.education or "",
+            "experienceYears": c.experience_years or 0
         }
         for c in candidates
     ]

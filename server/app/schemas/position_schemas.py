@@ -61,6 +61,8 @@ class RecommendedCandidate(BaseModel):
     role: str = Field(..., description="지원 포지션")
     score: int = Field(..., description="평가 점수")
     positionId: str = Field(..., description="포지션 ID")
+    education: str = Field(default="", description="학력")
+    experienceYears: int = Field(default=0, description="경력 연수")
 
     model_config = ConfigDict(from_attributes=True)
 
