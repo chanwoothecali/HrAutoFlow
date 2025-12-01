@@ -1,10 +1,12 @@
 export type Candidate = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  score: number;
-  skills: string[];
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    score: number;
+    skills: string[];
+    education?: string;
+    experienceYears?: number;
 };
 
 export type CandidateCardProps = {
