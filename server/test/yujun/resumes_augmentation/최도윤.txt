@@ -1,0 +1,102 @@
+[지원자 이력서]
+최도윤
+백엔드 / 플랫폼 엔지니어
+Email: doyoon.choi@example.com
+GitHub: https://github.com/doyoon-platform
+Blog: https://doyoon-dev.log
+거주지: 경기 용인
+
+[요약]
+- 로그/이벤트 수집 파이프라인과 내부 플랫폼 백엔드를 주로 담당해 온 4년 차 백엔드/플랫폼 엔지니어입니다.
+- Go와 Kotlin 기반의 마이크로서비스, gRPC, Kafka, Kubernetes 환경에서 실서비스를 운영한 경험이 있습니다.
+- 대규모 로그 스트림 처리, 서비스 간 통신 안정성, 장애 시 복구 전략 설계에 관심이 많습니다.
+- 개발 생산성과 운영 품질을 함께 높이는 것을 목표로, 공용 라이브러리/플랫폼화 작업에 기여해 왔습니다.
+
+[핵심 기술]
+- 언어: Go, Kotlin, Java(기본), Python(스크립트), SQL
+- 백엔드/플랫폼: gRPC, REST API, Kafka, Redis, PostgreSQL, MongoDB
+- 인프라/운영: Kubernetes, Docker, Helm, AWS (EKS, EC2, RDS, S3), Prometheus, Grafana, Loki
+- 기타: 마이크로서비스 아키텍처, 이벤트 드리븐 아키텍처, Circuit Breaker, Rate Limiting, Tracing(OpenTelemetry)
+- 협업/품질: GitHub, Jira, Confluence, Jenkins, Argo CD, Unit/Integration Test, Code Review 문화 경험
+
+[경력]
+
+로그플로우(LogFlow) / 백엔드 & 플랫폼 엔지니어
+2021.03 ~ 현재 (3년 9개월, 정규직, 용인/서울 혼합 근무)
+
+1) 로그/이벤트 수집 파이프라인 백엔드 개발 및 운영
+- 기술: Go, gRPC, Kafka, Redis, PostgreSQL, Kubernetes(EKS), Prometheus, Grafana
+- 역할:
+  - 웹/모바일 클라이언트에서 발생하는 행동 로그/이벤트 수집용 Ingestion API 및 gRPC 엔드포인트 설계·구현
+  - Kafka 토픽 설계(파티션 전략, 키 설계) 및 Consumer 그룹 스케일링 전략 수립
+  - Redis 기반 Rate Limiting, 간단한 큐 버퍼링으로 피크 타임 트래픽 완충 로직 구현
+  - 수집 파이프라인 장애 시 재처리/중복 처리 방지를 위한 idempotent 키 설계
+- 성과:
+  - 분당 처리 가능한 이벤트 수를 약 3만 건 → 12만 건으로 확장 (클러스터 스케일링 및 Consumer 구조 개선)
+  - 피크 타임 10분 동안 발생하던 메시지 유실 사례를 0건으로 감소 (재시도/Dead Letter Queue 도입 후)
+  - 주요 Ingestion API P95 응답 시간 350ms → 150ms 수준으로 개선
+
+2) 내부 지표 조회용 Aggregation 서비스 개발
+- 기술: Kotlin, Spring Boot, PostgreSQL, MongoDB, Redis, gRPC, REST
+- 역할:
+  - 마케터/PO가 사용하는 대시보드를 위한 지표 Aggregation 서비스 설계·구현 (활성 사용자 수, 전환율, 퍼널 분석 등)
+  - 비동기 집계 배치 및 사전 집계 테이블 구조 설계로, 클라이언트 쿼리 응답 속도 최적화
+  - gRPC 기반으로 다른 서비스와 연동되는 공용 지표 조회 API 정의
+- 성과:
+  - 대시보드 주요 지표 조회 응답 시간 평균 2.5초 → 400ms로 단축
+  - 사내 다른 팀(마케팅, CRM)에서 동일 Aggregation API를 재사용하면서, 중복 구현되던 통계 로직 3개 이상 제거
+
+3) 공용 Observability 플랫폼 고도화
+- 기술: Prometheus, Grafana, Loki, OpenTelemetry, Slack Webhook
+- 역할:
+  - 서비스 공통 지표/로그/트레이스를 한 번에 확인할 수 있도록 대시보드 템플릿 설계
+  - gRPC/HTTP 서비스 공용 미들웨어에 Trace ID, Latency 로그 자동 삽입 로직 추가
+  - 알람 룰(장애 레벨, 지연 증가, 에러율 상승 등)을 표준화하고 팀별로 재사용 가능한 룰셋 정의
+- 성과:
+  - 장애 발생 시 원인 서비스 식별까지 걸리던 평균 시간 약 30% 단축 (내부 회고 기준)
+  - 신규 마이크로서비스가 Observability 템플릿을 그대로 적용해, 대시보드/알람 셋업 시간을 반나절 이내로 단축
+
+[프로젝트]
+
+1) 사이드 프로젝트 – "TraceBoard" (개인용 트레이싱 대시보드)
+2023.06 ~ 2023.11 (개인)
+- 기술: Go, OpenTelemetry Collector, Tempo(분산 트레이싱 스토리지), Grafana, Docker Compose
+- 내용:
+  - 로컬 개발 환경에서 여러 마이크로서비스의 트레이스를 한 번에 확인할 수 있는 간단한 대시보드 셋업 예제
+  - gRPC/HTTP 클라이언트에 공통 Trace 헤더 삽입 미들웨어 구현
+- 특징:
+  - 팀 내 신규 입사자 온보딩 시 "분산 트레이싱 이해" 예제로 활용
+  - GitHub에 오픈소스로 공개, 몇몇 외부 스타/포크 기록 있음
+
+2) 팀 공용 Go 마이크로서비스 템플릿
+2022.09 ~ 2023.02 (내부 기여)
+- 내용:
+  - gRPC/HTTP 서버, 구조화된 로깅, 환경변수/Config 관리, Health Check, Graceful Shutdown, 기본 Observability 연동을 포함한 템플릿 리포지토리 구성
+  - Makefile, 헬스체크 엔드포인트, CI 파이프라인(Jenkins) 기본 스크립트 포함
+- 결과:
+  - 신규 Go 기반 서비스 생성 시 초기 셋업 시간을 2~3일 → 1일 미만으로 단축
+  - 서비스마다 제각각이던 로깅/메트릭 포맷을 통일하여, 공용 대시보드 구성 용이
+
+[교육]
+
+서울대학교 컴퓨터공학부
+2015.03 ~ 2021.02 졸업
+- 주요 과목: 운영체제, 분산 시스템, 컴퓨터 네트워크, 데이터베이스, 클라우드 컴퓨팅
+- 졸업 프로젝트: Kubernetes 기반 실시간 채팅 서비스 아키텍처 설계 및 프로토타입 구현
+
+[기타 활동]
+
+- 사내 기술 공유
+  - "Kafka Consumer 패턴과 재처리 전략" 세션 발표
+  - "OpenTelemetry로 보는 우리 서비스 호출 그래프" 세션 진행
+- 커뮤니티/스터디
+  - Go 언어 스터디 운영, gRPC 베스트 프랙티스 정리 문서 작성
+  - DevOps/클라우드 관련 밋업 참석 및 발표 몇 차례 진행
+- 기술 블로그
+  - 분산 트레이싱, Kafka 파티션 전략, gRPC 에러 핸들링 등 주제로 25편 이상 글 작성
+
+[자기 소개 및 강점 요약]
+- 여러 서비스가 엮인 환경에서 "어디서 문제가 시작됐는지"를 빠르게 찾을 수 있는 관측 가능성(Observability)에 관심이 많습니다.
+- 트래픽이 급증하는 상황에서도 안정적으로 버틸 수 있도록, 백프레셔·재시도·타임아웃 등 방어적인 설계를 지향합니다.
+- 단일 서비스 개선에 그치지 않고, 템플릿/플랫폼화 작업을 통해 팀 전체 생산성과 품질을 높이는 일을 좋아합니다.
+- 새로운 기술을 도입할 때는, 작은 PoC로 검증하고 팀원들과 공유·논의한 후 점진적으로 확대 적용하는 편입니다.
