@@ -107,6 +107,11 @@ export const apiClient = {
 
       return response.json();
     },
+
+    delete: (applicantId: string) =>
+      fetchAPI(`/applicants/${applicantId}`, {
+          method: 'DELETE',
+      }),
   },
 
   // Resumes

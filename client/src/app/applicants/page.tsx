@@ -37,6 +37,10 @@ export default function ApplicantsPage() {
 
   // 모달 상태
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [deleteTargetName, setDeleteTargetName] = useState<string>('');
+  const [deleting, setDeleting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [newForm, setNewForm] = useState<NewApplicantForm>({
     name: '',
@@ -169,6 +173,44 @@ export default function ApplicantsPage() {
     }
   };
 
+    const handleOpenDeleteModal = (id: string, name: string) => {
+        setDeleteTargetId(id);
+        setDeleteTargetName(name);
+        setShowDeleteModal(true);
+    };
+
+    const handleCloseDeleteModal = () => {
+        setShowDeleteModal(false);
+        setDeleteTargetId(null);
+        setDeleteTargetName('');
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!deleteTargetId) return;
+
+        setDeleting(true);
+
+        try {
+            await apiClient.applicants.delete(deleteTargetId);
+
+            // 리스트에서 제거
+            setApplicants(prev => prev.filter(a => a.id !== deleteTargetId));
+
+            // 선택된 항목이었다면 선택 해제
+            if (selectedId === deleteTargetId) {
+                setSelectedId(null);
+            }
+
+            handleCloseDeleteModal();
+            alert('지원자가 삭제되었습니다.');
+        } catch (error) {
+            console.error('삭제 실패:', error);
+            alert('삭제에 실패했습니다. 다시 시도해주세요.');
+        } finally {
+            setDeleting(false);
+        }
+    };
+
   if (error) {
     return (
       <div className="space-y-4">
@@ -243,6 +285,8 @@ export default function ApplicantsPage() {
                     <th className="px-3 py-2">포지션</th>
                     <th className="px-3 py-2">상태</th>
                     <th className="px-3 py-2 text-right">점수</th>
+                    <th className="px-3 py-2 text-right">액션</th>
+
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F1F1F2]">
@@ -356,6 +400,17 @@ export default function ApplicantsPage() {
                               {app.score}
                             </span>
                           )}
+                        </td>
+                        <td className="px-3 py-2 text-right">
+                          <button
+                              onClick={(e) => {
+                                  e.stopPropagation(); // 행 클릭 이벤트 방지
+                                  handleOpenDeleteModal(app.id, app.name);
+                              }}
+                              className="inline-flex items-center rounded-lg bg-red-50 px-2 py-1 text-[10px] font-semibold text-red-600 hover:bg-red-100 transition"
+                          >
+                              삭제
+                          </button>
                         </td>
                       </tr>
                     );
@@ -539,6 +594,44 @@ export default function ApplicantsPage() {
           </div>
         </div>
       )}
+
+    {/* ===== 삭제 확인 모달 ===== */}
+    {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+                <div className="mb-4">
+                    <h2 className="text-lg font-semibold text-slate-900">
+                        지원자 삭제
+                    </h2>
+                    <p className="mt-2 text-sm text-slate-600">
+                        <span className="font-semibold text-slate-900">{deleteTargetName}</span> 님의 정보를 삭제하시겠습니까?
+                    </p>
+                    <p className="mt-1 text-xs text-red-600">
+                        ⚠️ 이 작업은 되돌릴 수 없습니다. 이력서 및 모든 관련 데이터가 영구적으로 삭제됩니다.
+                    </p>
+                </div>
+
+                <div className="flex justify-end gap-2">
+                    <button
+                        type="button"
+                        onClick={handleCloseDeleteModal}
+                        disabled={deleting}
+                        className="rounded-full border border-[#E6E6E7] bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        취소
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleConfirmDelete}
+                        disabled={deleting}
+                        className="rounded-full bg-red-600 px-5 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {deleting ? '삭제 중...' : '삭제'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    )}
     </div>
   );
 }

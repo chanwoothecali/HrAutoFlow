@@ -326,3 +326,38 @@ async def get_upcoming_interviews(
         })
 
     return result
+
+
+# ==========================================
+# 8. 지원자 삭제
+# ==========================================
+@router.delete("/applicants/{applicant_id}")
+async def delete_applicant(
+        applicant_id: str,
+        db: Session = Depends(get_db)
+):
+    """
+    DELETE /applicants/{applicant_id}
+    지원자 삭제 (CASCADE로 연관 데이터 모두 삭제)
+    """
+    # str을 int로 변환
+    try:
+        applicant_id_int = int(applicant_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid applicant ID")
+
+    applicant = db.query(Applicant).filter(Applicant.id == applicant_id_int).first()
+
+    if not applicant:
+        raise HTTPException(status_code=404, detail="Applicant not found")
+
+    try:
+        db.delete(applicant)
+        db.commit()
+
+        return {"message": f"Applicant {applicant_id} deleted successfully"}
+
+    except Exception as e:
+        db.rollback()
+        print(f"Error deleting applicant: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete applicant: {str(e)}")
