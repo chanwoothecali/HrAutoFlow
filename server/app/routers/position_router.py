@@ -363,3 +363,222 @@ async def delete_applicant(
         db.rollback()
         print(f"Error deleting applicant: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to delete applicant: {str(e)}")
+
+
+# ==========================================
+# 9. 사람 평가 저장/조회
+# ==========================================
+from app.models import HumanEvaluation
+from pydantic import BaseModel
+
+
+class HumanFeedbackCreate(BaseModel):
+    score: int
+    recommendation: str
+    feedback: str
+    evaluator: str = '평가자'
+
+
+@router.post("/candidates/{candidate_id}/feedback")
+async def save_human_feedback(
+        candidate_id: int,
+        data: HumanFeedbackCreate,
+        db: Session = Depends(get_db)
+):
+    """사람 평가 저장 (여러 평가 가능)"""
+
+    # 지원자 존재 확인
+    applicant = db.query(Applicant).filter(Applicant.id == candidate_id).first()
+    if not applicant:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+
+    # 항상 새로운 평가 생성 (여러 평가 가능)
+    evaluation = HumanEvaluation(
+        applicant_id=candidate_id,
+        evaluator=data.evaluator,
+        score=data.score,
+        recommendation=data.recommendation,
+        feedback=data.feedback
+    )
+    db.add(evaluation)
+
+    try:
+        db.commit()
+        db.refresh(evaluation)
+        return {
+            "message": "Feedback created",
+            "success": True,
+            "evaluation": {
+                "id": evaluation.id,
+                "evaluator": evaluation.evaluator,
+                "score": evaluation.score,
+                "created_at": evaluation.created_at.isoformat() if evaluation.created_at else None
+            }
+        }
+    except Exception as e:
+        db.rollback()
+        print(f"Error saving feedback: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/candidates/{candidate_id}/feedback")
+async def get_human_feedback(
+        candidate_id: int,
+        db: Session = Depends(get_db)
+):
+    """사람 평가 조회 (통계 포함)"""
+    evaluations = db.query(HumanEvaluation).filter(
+        HumanEvaluation.applicant_id == candidate_id
+    ).order_by(HumanEvaluation.created_at.desc()).all()
+
+    # 통계 계산
+    total_count = len(evaluations)
+    avg_score = sum(e.score for e in evaluations) / total_count if total_count > 0 else 0
+
+    # 평가자별 통계
+    evaluator_stats = {}
+    for e in evaluations:
+        if e.evaluator not in evaluator_stats:
+            evaluator_stats[e.evaluator] = {
+                'count': 0,
+                'total_score': 0,
+                'latest_date': None
+            }
+        evaluator_stats[e.evaluator]['count'] += 1
+        evaluator_stats[e.evaluator]['total_score'] += e.score
+        if not evaluator_stats[e.evaluator]['latest_date'] or e.created_at > evaluator_stats[e.evaluator]['latest_date']:
+            evaluator_stats[e.evaluator]['latest_date'] = e.created_at
+
+    return {
+        "evaluations": [
+            {
+                "id": e.id,
+                "evaluator": e.evaluator,
+                "score": e.score,
+                "recommendation": e.recommendation,
+                "feedback": e.feedback,
+                "created_at": e.created_at.isoformat() if e.created_at else None,
+                "updated_at": e.updated_at.isoformat() if e.updated_at else None
+            }
+            for e in evaluations
+        ],
+        "statistics": {
+            "total_count": total_count,
+            "average_score": round(avg_score, 1),
+            "evaluator_count": len(evaluator_stats),
+            "by_evaluator": {
+                evaluator: {
+                    "count": stats['count'],
+                    "avg_score": round(stats['total_score'] / stats['count'], 1),
+                    "latest_evaluation": stats['latest_date'].isoformat() if stats['latest_date'] else None
+                }
+                for evaluator, stats in evaluator_stats.items()
+            }
+        }
+    }
+
+
+# ==========================================
+# 10. 평가 삭제 API
+# ==========================================
+@router.delete("/feedback/{evaluation_id}")
+async def delete_evaluation(
+        evaluation_id: int,
+        db: Session = Depends(get_db)
+):
+    """특정 평가 삭제"""
+    evaluation = db.query(HumanEvaluation).filter(
+        HumanEvaluation.id == evaluation_id
+    ).first()
+
+    if not evaluation:
+        raise HTTPException(status_code=404, detail="Evaluation not found")
+
+    try:
+        db.delete(evaluation)
+        db.commit()
+        return {"message": "Evaluation deleted successfully", "success": True}
+    except Exception as e:
+        db.rollback()
+        print(f"Error deleting evaluation: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==========================================
+# 11. 전체 평가 목록 조회 (평가 전용 탭용)
+# ==========================================
+@router.get("/evaluations")
+async def get_all_evaluations(
+        candidate_id: Optional[str] = Query(None, description="Filter by candidate ID"),
+        min_score: Optional[int] = Query(None, ge=0, le=100, description="Minimum score filter"),
+        limit: int = Query(50, ge=1, le=200, description="Number of results"),
+        offset: int = Query(0, ge=0, description="Offset for pagination"),
+        db: Session = Depends(get_db)
+):
+    """
+    전체 평가 목록 조회 (평가 전용 탭용)
+    - 지원자별 필터링
+    - 점수 필터링
+    - 페이지네이션 지원
+    """
+    query = db.query(HumanEvaluation).options(
+        joinedload(HumanEvaluation.applicant).joinedload(Applicant.position_rel)
+    )
+
+    # 필터 적용
+    if candidate_id:
+        try:
+            query = query.filter(HumanEvaluation.applicant_id == int(candidate_id))
+        except ValueError:
+            pass  # 잘못된 ID는 무시
+
+    if min_score is not None:
+        query = query.filter(HumanEvaluation.score >= min_score)
+
+    # 전체 개수 조회
+    total_count = query.count()
+
+    # 정렬 및 페이지네이션
+    evaluations = query.order_by(
+        HumanEvaluation.created_at.desc()
+    ).limit(limit).offset(offset).all()
+
+    # 지원자 목록 조회 (필터용)
+    candidates = db.query(
+        Applicant.id,
+        Applicant.name
+    ).join(
+        HumanEvaluation,
+        HumanEvaluation.applicant_id == Applicant.id
+    ).distinct().all()
+
+    candidate_list = [
+        {"id": str(c.id), "name": c.name}
+        for c in candidates
+    ]
+
+    return {
+        "evaluations": [
+            {
+                "id": e.id,
+                "applicant_id": e.applicant_id,
+                "applicant_name": e.applicant.name,
+                "position_title": e.applicant.position_rel.title if e.applicant.position_rel else "N/A",
+                "evaluator": e.evaluator,
+                "score": e.score,
+                "recommendation": e.recommendation,
+                "feedback": e.feedback,
+                "created_at": e.created_at.isoformat() if e.created_at else None
+            }
+            for e in evaluations
+        ],
+        "pagination": {
+            "total": total_count,
+            "limit": limit,
+            "offset": offset,
+            "has_more": (offset + limit) < total_count
+        },
+        "filters": {
+            "available_candidates": candidate_list
+        }
+    }

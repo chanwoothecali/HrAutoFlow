@@ -1,5 +1,6 @@
 # app/models.py
-from sqlalchemy import Column, Integer, String, BigInteger, Text, Boolean, Float, TIMESTAMP, ForeignKey, Date, UniqueConstraint, CheckConstraint, Index
+from sqlalchemy import Column, Integer, String, BigInteger, Text, Boolean, Float, TIMESTAMP, ForeignKey, Date, \
+    UniqueConstraint, CheckConstraint, Index, DateTime
 from sqlalchemy.dialects.postgresql import JSONB, ARRAY, UUID as PGUUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -74,6 +75,7 @@ class Applicant(Base):
     resumes = relationship("Resume", back_populates="applicant", cascade="all, delete-orphan")
     position_rel = relationship("Position", back_populates="applicants")
     interviews = relationship("Interview", back_populates="applicant", cascade="all, delete-orphan")
+    human_evaluations = relationship("HumanEvaluation", back_populates="applicant", cascade="all, delete-orphan")
 
     # Indexes
     __table_args__ = (
@@ -291,3 +293,18 @@ class LangchainPgEmbedding(Base):
     __table_args__ = (
         Index('ix_cmetadata_gin', 'cmetadata', postgresql_using='gin', postgresql_ops={'cmetadata': 'jsonb_path_ops'}),
     )
+
+class HumanEvaluation(Base):
+    __tablename__ = "human_evaluations"
+
+    id = Column(BigInteger, primary_key=True, index=True)
+    applicant_id = Column(BigInteger, ForeignKey("applicants.id", ondelete="CASCADE"), nullable=False)
+    evaluator = Column(String(100), nullable=False, default='평가자')
+    score = Column(Integer, nullable=False)
+    recommendation = Column(String(50))
+    feedback = Column(Text)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relationship
+    applicant = relationship("Applicant", back_populates="human_evaluations")

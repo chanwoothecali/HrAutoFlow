@@ -22,11 +22,16 @@ export default function InterviewLog() {
         fetch(`/api/interviews/upcoming?days=${days}`)
             .then(res => res.json())
             .then(data => {
-                setInterviews(data);
+                console.log('📅 Interviews Data:', data);
+
+                // 배열인지 확인
+                const interviewList = Array.isArray(data) ? data : [];
+                setInterviews(interviewList);
                 setLoading(false);
             })
             .catch(err => {
                 console.error('Failed to fetch interviews:', err);
+                setInterviews([]);
                 setLoading(false);
             });
     }, [activeTab]);

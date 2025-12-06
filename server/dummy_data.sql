@@ -133,7 +133,7 @@ VALUES
 (2, '박인사', 'hr@company.com', 'hr_manager', NOW()),
 (3, '이기술', 'tech.lead@company.com', 'tech_lead', NOW());
 
--- ID 시퀀스 업데이트
+-- ID   시퀀스 업데이트
 SELECT setval('admins_id_seq', (SELECT MAX(id) FROM admins));
 
 
@@ -266,3 +266,5 @@ SELECT a.name, r.processing_status, ra.summary
 FROM applicants a
 JOIN resumes r ON a.id = r.applicant_id
 LEFT JOIN resume_analysis ra ON r.id = ra.resume_id;
+
+
