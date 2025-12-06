@@ -8,6 +8,7 @@ const navigation = [
   { name: 'Candidates', href: '/candidates' },
   { name: 'Jobs', href: '/jobs' },
   { name: 'Applicants', href: '/applicants' },
+  { name: 'Evaluations', href: '/evaluations' },
 ];
 
 function classNames(...classes: (string | false | null | undefined)[]) {

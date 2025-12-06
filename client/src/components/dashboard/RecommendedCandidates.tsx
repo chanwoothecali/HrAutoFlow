@@ -58,11 +58,17 @@ export default function RecommendedCandidates({
                 </span>
                 <button
                   type="button"
-                  onClick={() =>
-                    router.push(`/candidates?candidateId=${c.id}`, {
+                  onClick={() => {
+                    // positionId도 함께 전달 (있을 경우)
+                    const params = new URLSearchParams();
+                    if (c.positionId) {
+                      params.set('positionId', c.positionId);
+                    }
+                    params.set('candidateId', c.id);
+                    router.push(`/candidates?${params.toString()}`, {
                       scroll: false,
-                    })
-                  }
+                    });
+                  }}
                   className="rounded-full border border-[#E6E6E7] bg-white px-4 py-1.5 text-xs font-semibold text-slate-900 hover:bg-slate-50"
                 >
                   View

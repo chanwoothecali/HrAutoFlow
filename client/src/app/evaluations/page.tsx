@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import EvaluationDetailModal from '@/components/evaluations/EvaluationDetailModal';
 
 type Evaluation = {
   id: number;
@@ -24,30 +25,36 @@ type EvaluationsResponse = {
     has_more: boolean;
   };
   filters: {
-    available_evaluators: string[];
+    available_candidates: Array<{
+      id: string;
+      name: string;
+    }>;
   };
 };
 
 export default function EvaluationsPage() {
   const router = useRouter();
-  
+
   const [data, setData] = useState<EvaluationsResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  
+
   // 필터 상태
-  const [selectedEvaluator, setSelectedEvaluator] = useState<string>('');
+  const [selectedCandidate, setSelectedCandidate] = useState<string>('');
   const [minScore, setMinScore] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(0);
-  
+
+  // 상세보기 모달
+  const [selectedEvaluation, setSelectedEvaluation] = useState<Evaluation | null>(null);
+
   const ITEMS_PER_PAGE = 20;
 
   // 평가 목록 로드
   const loadEvaluations = () => {
     setLoading(true);
-    
+
     const params = new URLSearchParams();
-    if (selectedEvaluator) {
-      params.set('evaluator', selectedEvaluator);
+    if (selectedCandidate) {
+      params.set('candidate_id', selectedCandidate);
     }
     if (minScore > 0) {
       params.set('min_score', minScore.toString());
@@ -62,17 +69,17 @@ export default function EvaluationsPage() {
         setLoading(false);
       })
       .catch(err => {
-        console.error('평가 목록 로딩 실패:', err);
+        console.error('Failed to load evaluations:', err);
         setLoading(false);
       });
   };
 
   useEffect(() => {
     loadEvaluations();
-  }, [selectedEvaluator, minScore, currentPage]);
+  }, [selectedCandidate, minScore, currentPage]);
 
   const handleDelete = async (evaluationId: number) => {
-    if (!confirm('이 평가를 삭제하시겠습니까?')) return;
+    if (!confirm('Delete this evaluation?')) return;
 
     try {
       const response = await fetch(`/api/feedback/${evaluationId}`, {
@@ -80,14 +87,14 @@ export default function EvaluationsPage() {
       });
 
       if (response.ok) {
-        alert('평가가 삭제되었습니다.');
+        alert('Evaluation deleted.');
         loadEvaluations();
       } else {
-        alert('삭제에 실패했습니다.');
+        alert('Failed to delete.');
       }
     } catch (error) {
-      console.error('평가 삭제 실패:', error);
-      alert('삭제 중 오류가 발생했습니다.');
+      console.error('Failed to delete evaluation:', error);
+      alert('Error occurred while deleting.');
     }
   };
 
@@ -110,43 +117,43 @@ export default function EvaluationsPage() {
   };
 
   return (
-    <div className="flex h-full flex-col gap-6">
-      {/* 헤더 */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">평가 관리</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            모든 지원자 평가를 확인하고 관리할 수 있습니다.
-          </p>
-        </div>
-        
-        {data && (
-          <div className="rounded-xl border border-[#E6E6E7] bg-white px-4 py-2">
-            <p className="text-sm text-slate-600">
-              총 <span className="font-bold text-indigo-600">{data.pagination.total}</span>개 평가
-            </p>
+      <div className="flex min-h-[calc(100vh-120px)] flex-col gap-6">
+          {/* 헤더 */}
+          <div className="flex items-center justify-between">
+              <div>
+                  <h1 className="text-3xl font-bold text-slate-900">Evaluations</h1>
+                  <p className="mt-2 text-sm text-slate-600">
+                      작성된 평가를 볼 수 있습니다.
+                  </p>
+              </div>
+
+              {data && (
+                  <div className="rounded-xl border border-[#E6E6E7] bg-white px-4 py-2">
+                      <p className="text-sm text-slate-600">
+                          Total <span className="font-bold text-indigo-600">{data.pagination.total}</span> evaluations
+                      </p>
+                  </div>
+              )}
           </div>
-        )}
-      </div>
 
       {/* 필터 */}
       <div className="flex gap-4 rounded-2xl border border-[#E6E6E7] bg-white p-4">
         <div className="flex-1">
           <label className="mb-2 block text-xs font-semibold text-slate-700">
-            평가자 필터
+            Candidate
           </label>
           <select
-            value={selectedEvaluator}
+            value={selectedCandidate}
             onChange={e => {
-              setSelectedEvaluator(e.target.value);
+              setSelectedCandidate(e.target.value);
               setCurrentPage(0);
             }}
             className="w-full rounded-lg border border-[#E6E6E7] px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
           >
-            <option value="">전체 평가자</option>
-            {data?.filters.available_evaluators.map(evaluator => (
-              <option key={evaluator} value={evaluator}>
-                {evaluator}
+            <option value="">All Candidates</option>
+            {data?.filters.available_candidates.map(candidate => (
+              <option key={candidate.id} value={candidate.id}>
+                {candidate.name}
               </option>
             ))}
           </select>
@@ -154,7 +161,7 @@ export default function EvaluationsPage() {
 
         <div className="w-48">
           <label className="mb-2 block text-xs font-semibold text-slate-700">
-            최소 점수
+            Min Score
           </label>
           <input
             type="number"
@@ -174,13 +181,13 @@ export default function EvaluationsPage() {
         <div className="flex items-end">
           <button
             onClick={() => {
-              setSelectedEvaluator('');
+              setSelectedCandidate('');
               setMinScore(0);
               setCurrentPage(0);
             }}
             className="rounded-lg border border-[#E6E6E7] bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
           >
-            필터 초기화
+            Reset Filters
           </button>
         </div>
       </div>
@@ -202,14 +209,14 @@ export default function EvaluationsPage() {
           <div className="divide-y divide-[#E6E6E7]">
             {/* 테이블 헤더 */}
             <div className="grid grid-cols-12 gap-4 bg-slate-50 px-6 py-3 text-xs font-semibold text-slate-600">
-              <div className="col-span-2">지원자</div>
-              <div className="col-span-2">포지션</div>
-              <div className="col-span-1">평가자</div>
-              <div className="col-span-1">점수</div>
-              <div className="col-span-1">추천</div>
-              <div className="col-span-3">피드백</div>
-              <div className="col-span-1">평가일</div>
-              <div className="col-span-1 text-right">액션</div>
+              <div className="col-span-2">Candidate</div>
+              <div className="col-span-2">Position</div>
+              <div className="col-span-1">Evaluator</div>
+              <div className="col-span-1">Score</div>
+              <div className="col-span-1">Status</div>
+              <div className="col-span-3">Feedback</div>
+              <div className="col-span-1">Date</div>
+              <div className="col-span-1 text-right">Actions</div>
             </div>
 
             {/* 테이블 바디 */}
@@ -271,6 +278,12 @@ export default function EvaluationsPage() {
                 {/* 액션 */}
                 <div className="col-span-1 flex justify-end gap-2">
                   <button
+                    onClick={() => setSelectedEvaluation(evaluation)}
+                    className="rounded-md bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600 hover:bg-indigo-100"
+                  >
+                    상세
+                  </button>
+                  <button
                     onClick={() => handleDelete(evaluation.id)}
                     className="rounded-md bg-red-50 px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-100"
                   >
@@ -308,6 +321,14 @@ export default function EvaluationsPage() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* 상세보기 모달 */}
+      {selectedEvaluation && (
+        <EvaluationDetailModal
+          evaluation={selectedEvaluation}
+          onClose={() => setSelectedEvaluation(null)}
+        />
       )}
     </div>
   );

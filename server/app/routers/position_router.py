@@ -509,7 +509,7 @@ async def delete_evaluation(
 # ==========================================
 @router.get("/evaluations")
 async def get_all_evaluations(
-        evaluator: Optional[str] = Query(None, description="Filter by evaluator name"),
+        candidate_id: Optional[str] = Query(None, description="Filter by candidate ID"),
         min_score: Optional[int] = Query(None, ge=0, le=100, description="Minimum score filter"),
         limit: int = Query(50, ge=1, le=200, description="Number of results"),
         offset: int = Query(0, ge=0, description="Offset for pagination"),
@@ -517,7 +517,7 @@ async def get_all_evaluations(
 ):
     """
     전체 평가 목록 조회 (평가 전용 탭용)
-    - 평가자별 필터링
+    - 지원자별 필터링
     - 점수 필터링
     - 페이지네이션 지원
     """
@@ -526,8 +526,11 @@ async def get_all_evaluations(
     )
 
     # 필터 적용
-    if evaluator:
-        query = query.filter(HumanEvaluation.evaluator == evaluator)
+    if candidate_id:
+        try:
+            query = query.filter(HumanEvaluation.applicant_id == int(candidate_id))
+        except ValueError:
+            pass  # 잘못된 ID는 무시
 
     if min_score is not None:
         query = query.filter(HumanEvaluation.score >= min_score)
@@ -540,9 +543,19 @@ async def get_all_evaluations(
         HumanEvaluation.created_at.desc()
     ).limit(limit).offset(offset).all()
 
-    # 평가자 목록 조회 (필터용)
-    evaluators = db.query(HumanEvaluation.evaluator).distinct().all()
-    evaluator_list = [e[0] for e in evaluators]
+    # 지원자 목록 조회 (필터용)
+    candidates = db.query(
+        Applicant.id,
+        Applicant.name
+    ).join(
+        HumanEvaluation,
+        HumanEvaluation.applicant_id == Applicant.id
+    ).distinct().all()
+
+    candidate_list = [
+        {"id": str(c.id), "name": c.name}
+        for c in candidates
+    ]
 
     return {
         "evaluations": [
@@ -566,6 +579,6 @@ async def get_all_evaluations(
             "has_more": (offset + limit) < total_count
         },
         "filters": {
-            "available_evaluators": evaluator_list
+            "available_candidates": candidate_list
         }
     }
