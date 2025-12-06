@@ -183,6 +183,30 @@ CREATE TABLE dashboard_stats (
 
 CREATE INDEX idx_dashboard_date ON dashboard_stats(stat_date DESC);
 
+-- 사람 평가 테이블 (한 평가자가 여러 평가 가능)
+CREATE TABLE human_evaluations (
+    id SERIAL PRIMARY KEY,
+    applicant_id BIGINT NOT NULL REFERENCES applicants(id) ON DELETE CASCADE,
+    evaluator VARCHAR(100) NOT NULL DEFAULT '평가자',
+    score INT NOT NULL CHECK (score >= 0 AND score <= 100),
+    recommendation VARCHAR(50) CHECK (recommendation IN ('강력 추천', '추천', '보류', '거부')),
+    feedback TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 인덱스
+CREATE INDEX idx_human_eval_applicant ON human_evaluations(applicant_id);
+CREATE INDEX idx_human_eval_evaluator ON human_evaluations(evaluator);
+CREATE INDEX idx_human_eval_score ON human_evaluations(score);
+CREATE INDEX idx_human_eval_created ON human_evaluations(created_at DESC);
+
+-- 코멘트
+COMMENT ON TABLE human_evaluations IS '사람이 작성한 지원자 평가 (정량평가용)';
+COMMENT ON COLUMN human_evaluations.score IS '평가 점수 (0-100)';
+COMMENT ON COLUMN human_evaluations.recommendation IS '추천 여부';
+COMMENT ON COLUMN human_evaluations.feedback IS '자유 형식 피드백';
+
 -- ============================================
 -- 3. 트리거 및 함수
 -- ============================================
