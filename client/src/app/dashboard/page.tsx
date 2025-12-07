@@ -22,6 +22,7 @@ export default function DashboardPage() {
         inProgress: 0,
         finalInterview: 0,
         hired: 0,
+        pending: 0,
     });
     const [allCandidates, setAllCandidates] = useState<Candidate[]>([]);
     const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>([]);
@@ -87,6 +88,7 @@ export default function DashboardPage() {
         { name: 'New', value: stats.new },
         { name: 'In Progress', value: stats.inProgress },
         { name: 'Final Interview', value: stats.finalInterview },
+        { name: 'Pending', value: stats.pending },
         { name: 'Employed', value: stats.hired },
     ];
 
@@ -116,17 +118,18 @@ export default function DashboardPage() {
                                 <PositionsPieChart data={pieData} />
                             </div>
 
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex gap-2">
                                 <DashboardStatCard label="New" value={stats.new} />
                                 <DashboardStatCard
                                     label="In Progress"
                                     value={stats.inProgress}
                                 />
                                 <DashboardStatCard
-                                    label="Final Interview"
+                                    label="Interview"
                                     value={stats.finalInterview}
                                 />
-                                <DashboardStatCard label="Employed" value={stats.hired} />
+                                <DashboardStatCard label="Pending" value={stats.pending} />
+                                <DashboardStatCard label="Hired" value={stats.hired} />
                             </div>
                         </div>
                     </div>

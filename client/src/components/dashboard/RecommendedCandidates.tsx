@@ -11,7 +11,17 @@ interface RecommendedCandidatesProps {
 export default function RecommendedCandidates({
   candidates,
 }: RecommendedCandidatesProps) {
-  const router = useRouter(); // ✅ 추가
+  const router = useRouter();
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+  };
 
   return (
     <div className="rounded-2xl border border-[#E6E6E7] bg-white p-6 shadow-sm">
@@ -47,7 +57,17 @@ export default function RecommendedCandidates({
                   <p className="mt-0.5 truncate text-xs text-slate-500">
                     {c.email}
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-500">{c.role}</p>
+                  <div className="mt-0.5 flex items-center gap-2">
+                    <p className="text-xs text-slate-500">{c.role}</p>
+                    {c.createdAt && (
+                      <>
+                        <span className="text-slate-300">·</span>
+                        <p className="text-xs text-slate-400">
+                          {formatDate(c.createdAt)}
+                        </p>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
 

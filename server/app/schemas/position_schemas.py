@@ -13,6 +13,7 @@ class PositionStatsResponse(BaseModel):
     inProgress: int = Field(default=0, alias="inProgress", description="In Progress 상태 지원자 수")
     finalInterview: int = Field(default=0, alias="finalInterview", description="Interview 상태 지원자 수")
     hired: int = Field(default=0, description="Hired 상태 지원자 수")
+    pending: int = Field(default=0, description="Pending 상태 지원자 수")
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -63,6 +64,7 @@ class RecommendedCandidate(BaseModel):
     positionId: str = Field(..., description="포지션 ID")
     education: str = Field(default="", description="학력")
     experienceYears: int = Field(default=0, description="경력 연수")
+    createdAt: Optional[str] = Field(None, description="등록일")
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -4,7 +4,8 @@
 import { PositionPieDatum } from '@/types/dashboard';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
-const COLORS = ['#E5E7EA', '#2562EA', '#0BB981', '#FBBF24'];
+// New, In Progress, Final Interview, Pending, Employed 순서
+const COLORS = ['#E5E7EA', '#2562EA', '#0BB981', '#FBBF24', '#10B981'];
 
 export default function PositionsPieChart({
   data,

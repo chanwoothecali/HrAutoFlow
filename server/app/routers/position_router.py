@@ -31,14 +31,16 @@ async def get_position_stats(db: Session = Depends(get_db)):
         func.count(case((Applicant.status == 'New', 1))).label('new'),
         func.count(case((Applicant.status == 'In Progress', 1))).label('inProgress'),
         func.count(case((Applicant.status == 'Interview', 1))).label('finalInterview'),
-        func.count(case((Applicant.status == 'Hired', 1))).label('hired')
+        func.count(case((Applicant.status == 'Hired', 1))).label('hired'),
+        func.count(case((Applicant.status == 'pending', 1))).label('pending')
     ).first()
 
     return {
         "new": stats.new or 0,
         "inProgress": stats.inProgress or 0,
         "finalInterview": stats.finalInterview or 0,
-        "hired": stats.hired or 0
+        "hired": stats.hired or 0,
+        "pending": stats.pending or 0
     }
 
 
@@ -122,13 +124,15 @@ async def get_recommended_candidates(
         db: Session = Depends(get_db)
 ):
     # position_id가 있고 유효한 점수가 있는 지원자만 조회
+    # 등록일(created_at) 기준 최신순으로 정렬
     candidates = db.query(Applicant).options(
-        joinedload(Applicant.position_rel)
+        joinedload(Applicant.position_rel),
+        joinedload(Applicant.resumes)
     ).filter(
         Applicant.position_id.isnot(None),  # position_id 필수
         Applicant.score.isnot(None),         # score가 null이 아닌 것만
         Applicant.score > 0                   # score가 0보다 큰 것만
-    ).order_by(Applicant.score.desc()).limit(limit).all()
+    ).order_by(Applicant.created_at.desc()).limit(limit).all()
 
     return [
         {
@@ -139,7 +143,8 @@ async def get_recommended_candidates(
             "score": c.score or 0,
             "positionId": str(c.position_id) if c.position_id else "0",
             "education": c.education or "",
-            "experienceYears": c.experience_years or 0
+            "experienceYears": c.experience_years or 0,
+            "createdAt": c.created_at.isoformat() if c.created_at else None
         }
         for c in candidates
     ]

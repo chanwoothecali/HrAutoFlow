@@ -7,6 +7,8 @@ export type Candidate = {
     skills: string[];
     education?: string;
     experienceYears?: number;
+    positionId?: string;
+    createdAt?: string;
 };
 
 export type CandidateCardProps = {

@@ -3,6 +3,7 @@ export type DashboardStats = {
   inProgress: number;
   finalInterview: number;
   hired: number;
+  pending: number;
 };
 
 export type PositionPieDatum = {
