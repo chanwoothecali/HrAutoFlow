@@ -1,15 +1,45 @@
-# 최상위 .gitignore 파일 내용에 다음을 추가합니다:
-
 # Dependencies
 /client/node_modules
-/client/.idea
 /client/.next
-
-/server/.idea
-/server/.venv
-/server/.env
 /client/.next/
-/server/.idea/
 
+# Python virtual environment
+/server/.venv
+
+# Environment variables
+/server/.env
+.env
+
+# Python cache
 __pycache__/
+**/__pycache__/
+*.py[cod]
 *.pyc
+*.pyo
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# ML Models (too large for git)
+server/models/
+server/test/gyuno/lora/
+*.bin
+*.safetensors
+*.gguf
+*.pt
+*.pth
