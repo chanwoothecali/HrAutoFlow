@@ -162,6 +162,18 @@ docker compose --profile models up ollama-models
 docker compose down -v
 ```
 
+데모용 테스트 데이터를 넣으려면 서버 컨테이너에서 seed 스크립트를 실행합니다.
+
+```bash
+docker compose exec server python -m app.seed_demo
+```
+
+RAG 질의응답까지 확인하려면 Ollama 모델을 받은 뒤 임베딩 생성 옵션을 함께 사용합니다.
+
+```bash
+docker compose exec server python -m app.seed_demo --with-embeddings
+```
+
 ### 3. Manual Setup
 
 Docker Compose를 사용하지 않고 직접 실행할 수도 있습니다.
@@ -214,6 +226,12 @@ Initialize DB:
 
 ```bash
 poetry run python -m app.init_db
+```
+
+Seed demo data:
+
+```bash
+poetry run python -m app.seed_demo
 ```
 
 Start API server:
