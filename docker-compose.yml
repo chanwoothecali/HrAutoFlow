@@ -1,0 +1,96 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: hrautoflow-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: hr_autoflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hr_autoflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: hrautoflow-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+
+  ollama-models:
+    image: ollama/ollama:latest
+    profiles:
+      - models
+    depends_on:
+      - ollama
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "ollama pull llama3 &&
+       ollama pull nomic-embed-text"
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: hrautoflow-server
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: hr_autoflow
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_MODEL: llama3
+      LLM_PROVIDER: ollama
+      UPSTAGE_API_KEY: ${UPSTAGE_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      LANGSMITH_TRACING: ${LANGSMITH_TRACING:-false}
+      LANGSMITH_ENDPOINT: ${LANGSMITH_ENDPOINT:-https://api.smith.langchain.com}
+      LANGSMITH_API_KEY: ${LANGSMITH_API_KEY:-}
+      LANGSMITH_PROJECT: ${LANGSMITH_PROJECT:-hr-autoflow}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server:/app
+      - server-storage:/app/storage
+    command: >
+      sh -c "python -m app.init_db &&
+             uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: hrautoflow-client
+    depends_on:
+      - server
+    environment:
+      FASTAPI_BASE_URL: http://server:8000/api
+      NEXT_PUBLIC_API_URL: http://server:8000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+
+volumes:
+  postgres-data:
+  ollama-data:
+  server-storage:

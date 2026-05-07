@@ -79,8 +79,10 @@ AI 기반 채용 지원자 분석 시스템입니다.
 
 ```text
 HrAutoFlow/
-├── client/   # Next.js frontend
-├── server/   # FastAPI backend
+├── client/              # Next.js frontend
+├── server/              # FastAPI backend
+├── docker/postgres/init # PostgreSQL initialization scripts
+├── docker-compose.yml   # local development stack
 └── README.md
 ```
 
@@ -132,7 +134,39 @@ git clone <repo-url>
 cd HrAutoFlow
 ```
 
-### 2. Start PostgreSQL + PGVector
+### 2. Run with Docker Compose
+
+전체 개발 환경을 한 번에 실행하려면 Docker Compose를 사용합니다.
+
+```bash
+docker compose up --build
+```
+
+처음 실행하거나 Ollama 모델을 내려받아야 하는 경우에는 아래 명령을 한 번 실행합니다.
+
+```bash
+docker compose --profile models up ollama-models
+```
+
+실행 후 아래 주소에서 확인할 수 있습니다.
+
+- Frontend: [http://localhost:3000](http://localhost:3000)
+- Backend: [http://localhost:8000](http://localhost:8000)
+- API Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+- PostgreSQL: `localhost:5432`
+- Ollama: [http://localhost:11434](http://localhost:11434)
+
+컨테이너와 볼륨을 함께 정리하려면 아래 명령을 사용합니다.
+
+```bash
+docker compose down -v
+```
+
+### 3. Manual Setup
+
+Docker Compose를 사용하지 않고 직접 실행할 수도 있습니다.
+
+#### Start PostgreSQL + PGVector
 
 ```bash
 docker run -d \
@@ -144,7 +178,7 @@ docker run -d \
   ankane/pgvector
 ```
 
-### 3. Start Ollama
+#### Start Ollama
 
 ```bash
 ollama serve
@@ -152,7 +186,7 @@ ollama pull llama3
 ollama pull nomic-embed-text
 ```
 
-### 4. Run backend
+#### Run backend
 
 ```bash
 cd server
@@ -188,7 +222,7 @@ Start API server:
 poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 5. Run frontend
+#### Run frontend
 
 ```bash
 cd client

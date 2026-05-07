@@ -1,0 +1,12 @@
+.venv
+__pycache__
+*.pyc
+.env
+storage
+models
+test/gyuno/lora
+*.bin
+*.safetensors
+*.gguf
+*.pt
+*.pth
