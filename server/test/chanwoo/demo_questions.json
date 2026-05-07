@@ -1,0 +1,17 @@
+[
+  {
+    "label": "backend_operations",
+    "applicant_email": "minjun.backend@demo.hrautoflow.local",
+    "question": "이 후보자는 운영 서비스 장애 대응 경험이 있나요?"
+  },
+  {
+    "label": "ai_platform_rag",
+    "applicant_email": "dohyun.ai@demo.hrautoflow.local",
+    "question": "이 후보자는 RAG 파이프라인 구축 경험이 있나요?"
+  },
+  {
+    "label": "frontend_dashboard",
+    "applicant_email": "jiwoo.frontend@demo.hrautoflow.local",
+    "question": "이 후보자는 대시보드 UI 개발 경험이 있나요?"
+  }
+]
